@@ -9,7 +9,7 @@ public class ResponseData {
     private String downloadURL;
     private Long size;
     private String fileFormat;
-    /*private String uploadDate;
+    private String uploadDate;
     private String changeDate;
-    private String comment;*/
+    private String comment;
 }

@@ -17,10 +17,14 @@ public class FileDTO {
     private String id;
     private String name;
     private String format;
+    private Long uploadDate;
+    private String changeDate;
+    private String comment;
     @Lob
     private byte[] data;
 
-    public FileDTO(String name, String format, byte[] data) {
+    public FileDTO(String name, String format, byte[] data, Long uploadDate) {
+        this.uploadDate = uploadDate;
         this.name = name;
         this.format = format;
         this.data = data;

@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -18,8 +20,12 @@ import java.util.stream.Stream;
 @CrossOrigin("http://localhost:8080")
 public class FileController {
 
-    @Autowired
-    FileService fileService;
+    final
+    private FileService fileService;
+
+    public FileController(FileService fileService) {
+        this.fileService = fileService;
+    }
 
     @PostMapping("/upload")
     public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("file") MultipartFile file) {
@@ -44,7 +50,10 @@ public class FileController {
                     fileDTO.getName(),
                     fileDownloadURL,
                     (long) fileDTO.getData().length,
-                    fileDTO.getFormat()
+                    fileDTO.getFormat(),
+                    fileDTO.getComment(),
+                    fileDTO.getChangeDate(),
+                    fileDTO.getUploadDate()
                     //время, время обновления, коммент
             );
         }).collect(Collectors.toList());
