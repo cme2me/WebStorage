@@ -1,61 +1,74 @@
 package com.example.storage.controller;
 
+import com.example.storage.dto.FileDTO;
 import com.example.storage.model.ResponseData;
+import com.example.storage.model.ResponseMessage;
 import com.example.storage.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
+@CrossOrigin("http://localhost:8080")
 public class FileController {
 
-    private final FileService fileService;
     @Autowired
-    public FileController(FileService fileService) {
-        this.fileService = fileService;
-    }
+    FileService fileService;
+
     @PostMapping("/upload")
-    public ResponseData responseData(@RequestParam("file")MultipartFile file, @RequestParam("fileID") Long fileID, @RequestParam("fileType") String fileFormat) {
-        String fileName = null;
+    public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("file") MultipartFile file) {
+        String message = "";
         try {
-            fileName = fileService.putFile(file, fileID, fileFormat);
+            fileService.putFile(file);
+            message = "Файл загружен " + file.getOriginalFilename();
+            return ResponseEntity.ok().body(new ResponseMessage(message));
+        } catch (Exception e) {
+            message = "Файл не был загружен " + file.getOriginalFilename();
+            return ResponseEntity.badRequest().body(new ResponseMessage(message));
+        }
+    }
+    @GetMapping("/allFiles")
+    public ResponseEntity<List<ResponseData>> getAllFiles() {
+        List<ResponseData> files = fileService.getAllFilesInStorage().map(fileDTO -> {
+            String fileDownloadURL = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/allFiles/")
+                    .path(fileDTO.getId())
+                    .toUriString();
+            return new ResponseData(
+                    fileDTO.getName(),
+                    fileDownloadURL,
+                    (long) fileDTO.getData().length,
+                    fileDTO.getFormat()
+                    //время, время обновления, коммент
+            );
+        }).collect(Collectors.toList());
+        return ResponseEntity.ok().body(files);
+    }
+    @GetMapping("/file/{id}")
+    public ResponseEntity<byte[]> getFileByID(@PathVariable String id) throws Exception {
+        FileDTO fileDTO = fileService.getFileByID(id);
+
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileDTO.getName() + "")
+                .body(fileDTO.getData());
+    }
+
+    @PostMapping("/file/delete/{id}")
+    public ResponseEntity<ResponseMessage> deleteFileByID(@PathVariable String id) {
+        String message = "";
+        try {
+            fileService.deleteFileByID(id);
+            message = "файл успешно удален";
+            return ResponseEntity.ok().body(new ResponseMessage(message));
         } catch (Exception e) {
             e.printStackTrace();
+            message = "файл не удален";
+            return ResponseEntity.badRequest().body(new ResponseMessage(message));
         }
-        String fileDownloadURI = ServletUriComponentsBuilder.fromCurrentContextPath().path("/download/").path(fileName).toUriString();
-        return new ResponseData(fileName,fileDownloadURI, file.getContentType(), file.getSize());
-    }
-    @GetMapping("/download")
-    public ResponseEntity<Resource> downloadFiles(@RequestParam("fileID") Long fileID, @RequestParam("fileType") String fileFormat,
-                                                  HttpServletRequest httpServletRequest) {
-        String fileName = fileService.getFileName(fileID, fileFormat);
-        Resource resource = null;
-        if (fileName != null && !fileName.isEmpty()) {
-            try {
-                resource = fileService.loadFile(fileName);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        String contentInFIle = null;
-        try {
-            contentInFIle = httpServletRequest.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        if (contentInFIle == null) {
-            contentInFIle = "application/octet-stream";
-        }
-        return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentInFIle))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"").body(resource);
-
     }
 }
