@@ -2,6 +2,8 @@ package com.example.storage.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 public class ResponseData {
@@ -9,7 +11,7 @@ public class ResponseData {
     private String downloadURL;
     private Long size;
     private String fileFormat;
-    /*private String uploadDate;
-    private String changeDate;
+    private LocalDateTime uploadDate;
+    /*private String changeDate;
     private String comment;*/
 }

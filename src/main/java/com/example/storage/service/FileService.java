@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.stream.Stream;
 
 @Service
@@ -16,9 +19,10 @@ public class FileService {
     @Autowired
     private FileRepository fileRepository;
 
-    public FileDTO putFile(MultipartFile file) throws Exception {
+    public FileDTO putFile(MultipartFile file) throws Exception{
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-        FileDTO fileDTO = new FileDTO(fileName, file.getContentType(), file.getBytes());
+        LocalDateTime date = LocalDateTime.now();
+        FileDTO fileDTO = new FileDTO(fileName, file.getContentType(), file.getBytes(), date);
         return fileRepository.save(fileDTO);
     }
 

@@ -44,7 +44,8 @@ public class FileController {
                     fileDTO.getName(),
                     fileDownloadURL,
                     (long) fileDTO.getData().length,
-                    fileDTO.getFormat()
+                    fileDTO.getFormat(),
+                    fileDTO.getDate()
                     //время, время обновления, коммент
             );
         }).collect(Collectors.toList());
