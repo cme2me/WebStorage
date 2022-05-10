@@ -40,7 +40,6 @@ public class FileService {
 
     public FileDTO updateFile(String id, MultipartFile file) throws IOException {
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-        fileRepository.findById(id);
         fileRepository.deleteById(id);
         LocalDateTime date = LocalDateTime.now();
         return fileRepository.save(new FileDTO(fileName, file.getContentType(), file.getBytes(), date));
