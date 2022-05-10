@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -72,5 +74,16 @@ public class FileController {
             message = "файл не удален";
             return ResponseEntity.badRequest().body(new ResponseMessage(message));
         }
+    }
+
+    @PostMapping("/file/update/{id}")
+    public ResponseEntity<ResponseMessage> updateFileByID(@PathVariable String id, @RequestParam("file") MultipartFile file) {
+        try {
+            FileDTO fileDTO = fileService.updateFile(id, file);
+            return ResponseEntity.ok().body(new ResponseMessage("Файл успешно обновлен"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ResponseEntity.badRequest().body(new ResponseMessage("Файл не был обновлен"));
     }
 }
