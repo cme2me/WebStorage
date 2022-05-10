@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "storage_files")
@@ -19,10 +20,12 @@ public class FileDTO {
     private String format;
     @Lob
     private byte[] data;
+    private LocalDateTime date;
 
-    public FileDTO(String name, String format, byte[] data) {
+    public FileDTO(String name, String format, byte[] data, LocalDateTime date) {
         this.name = name;
         this.format = format;
         this.data = data;
+        this.date = date;
     }
 }
