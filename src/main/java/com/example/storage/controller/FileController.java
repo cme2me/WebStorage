@@ -1,5 +1,6 @@
 package com.example.storage.controller;
 
+import com.example.storage.exceptions.FileException;
 import com.example.storage.model.FileModel;
 import com.example.storage.dto.ResponseData;
 import com.example.storage.dto.ResponseMessage;
@@ -21,21 +22,18 @@ public class FileController {
 
     private final
     FileService fileService;
+
     @Autowired
     public FileController(FileService fileService) {
         this.fileService = fileService;
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("file") MultipartFile file) {
-        String message = "";
+    public void uploadFile(@RequestParam("file") MultipartFile file) {
         try {
-            fileService.putFile(file);
-            message = "Файл загружен " + file.getOriginalFilename();
-            return ResponseEntity.ok().body(new ResponseMessage(message));
+           fileService.putFile(file);
         } catch (Exception e) {
-            message = "Файл не был загружен " + file.getOriginalFilename();
-            return ResponseEntity.badRequest().body(new ResponseMessage(message));
+            throw new FileException("Недопустимый размер файла" + e);
         }
     }
 

@@ -13,8 +13,8 @@ import java.time.LocalDateTime;
 @Data
 public class FileModel {
     @Id
-    /*@GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid2")*/
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
     private String name;
     private String format;
