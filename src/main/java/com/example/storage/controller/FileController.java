@@ -16,11 +16,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@CrossOrigin("http://localhost:8080")
+//@CrossOrigin("http://localhost:8081")
 public class FileController {
 
-    @Autowired
+    private final
     FileService fileService;
+    @Autowired
+    public FileController(FileService fileService) {
+        this.fileService = fileService;
+    }
 
     @PostMapping("/upload")
     public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("file") MultipartFile file) {

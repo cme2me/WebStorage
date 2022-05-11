@@ -1,11 +1,12 @@
 package com.example.storage.service;
 
-import com.example.storage.model.FileModel;
 import com.example.storage.entity.repository.FileRepository;
+import com.example.storage.model.FileModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.stream.Stream;
@@ -13,10 +14,14 @@ import java.util.stream.Stream;
 @Service
 public class FileService {
 
-    @Autowired
-    private FileRepository fileRepository;
+    private final FileRepository fileRepository;
 
-    public FileModel putFile(MultipartFile file) throws Exception{
+    @Autowired
+    public FileService(FileRepository fileRepository) {
+        this.fileRepository = fileRepository;
+    }
+
+    public FileModel putFile(MultipartFile file) throws Exception {
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
         LocalDateTime date = LocalDateTime.now();
         FileModel fileModel = new FileModel(fileName, file.getContentType(), file.getBytes(), date);

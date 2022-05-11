@@ -8,13 +8,13 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "storage_files")
+/*@Table(name = "storage_files")*/
 @NoArgsConstructor
 @Data
 public class FileModel {
     @Id
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid2")
+    /*@GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")*/
     private String id;
     private String name;
     private String format;
