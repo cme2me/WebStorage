@@ -1,12 +1,11 @@
 package com.example.storage.controller;
 
-import com.example.storage.dto.FileDTO;
-import com.example.storage.model.ResponseData;
-import com.example.storage.model.ResponseMessage;
+import com.example.storage.model.FileModel;
+import com.example.storage.dto.ResponseData;
+import com.example.storage.dto.ResponseMessage;
 import com.example.storage.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,7 +14,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @RestController
 @CrossOrigin("http://localhost:8080")
@@ -36,30 +34,32 @@ public class FileController {
             return ResponseEntity.badRequest().body(new ResponseMessage(message));
         }
     }
+
     @GetMapping("/allFiles")
     public ResponseEntity<List<ResponseData>> getAllFiles() {
-        List<ResponseData> files = fileService.getAllFilesInStorage().map(fileDTO -> {
+        List<ResponseData> files = fileService.getAllFilesInStorage().map(fileModel -> {
             String fileDownloadURL = ServletUriComponentsBuilder.fromCurrentContextPath()
                     .path("/allFiles/")
-                    .path(fileDTO.getId())
+                    .path(fileModel.getId())
                     .toUriString();
             return new ResponseData(
-                    fileDTO.getName(),
+                    fileModel.getName(),
                     fileDownloadURL,
-                    (long) fileDTO.getData().length,
-                    fileDTO.getFormat(),
-                    fileDTO.getDate()
+                    (long) fileModel.getData().length,
+                    fileModel.getFormat(),
+                    fileModel.getDate()
                     // время обновления, коммент
             );
         }).collect(Collectors.toList());
         return ResponseEntity.ok().body(files);
     }
+
     @GetMapping("/file/{id}")
     public ResponseEntity<byte[]> getFileByID(@PathVariable String id) throws Exception {
-        FileDTO fileDTO = fileService.getFileByID(id);
+        FileModel fileModel = fileService.getFileByID(id);
 
-        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileDTO.getName() + "")
-                .body(fileDTO.getData());
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileModel.getName() + "")
+                .body(fileModel.getData());
     }
 
     @PostMapping("/file/delete/{id}")
@@ -79,7 +79,7 @@ public class FileController {
     @PostMapping("/file/update/{id}")
     public ResponseEntity<ResponseMessage> updateFileByID(@PathVariable String id, @RequestParam("file") MultipartFile file) {
         try {
-            FileDTO fileDTO = fileService.updateFile(id, file);
+            FileModel fileModel = fileService.updateFile(id, file);
             return ResponseEntity.ok().body(new ResponseMessage("Файл успешно обновлен"));
         } catch (IOException e) {
             e.printStackTrace();

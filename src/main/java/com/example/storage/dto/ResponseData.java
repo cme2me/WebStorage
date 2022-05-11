@@ -1,4 +1,4 @@
-package com.example.storage.model;
+package com.example.storage.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

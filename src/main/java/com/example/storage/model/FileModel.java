@@ -1,4 +1,4 @@
-package com.example.storage.dto;
+package com.example.storage.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Table(name = "storage_files")
 @NoArgsConstructor
 @Data
-public class FileDTO {
+public class FileModel {
     @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
@@ -22,7 +22,7 @@ public class FileDTO {
     private byte[] data;
     private LocalDateTime date;
 
-    public FileDTO(String name, String format, byte[] data, LocalDateTime date) {
+    public FileModel(String name, String format, byte[] data, LocalDateTime date) {
         this.name = name;
         this.format = format;
         this.data = data;
