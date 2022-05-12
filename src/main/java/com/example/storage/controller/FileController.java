@@ -29,9 +29,10 @@ public class FileController {
     }
 
     @PostMapping("/upload")
-    public void uploadFile(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
            fileService.putFile(file);
+           return fileService.msg();
         } catch (Exception e) {
             throw new FileException("Недопустимый размер файла" + e);
         }
@@ -41,7 +42,7 @@ public class FileController {
     public ResponseEntity<List<ResponseData>> getAllFiles() {
         List<ResponseData> files = fileService.getAllFilesInStorage().map(fileModel -> {
             String fileDownloadURL = ServletUriComponentsBuilder.fromCurrentContextPath()
-                    .path("/allFiles/")
+                    .path("/file/")
                     .path(fileModel.getId())
                     .toUriString();
             return new ResponseData(
@@ -78,7 +79,7 @@ public class FileController {
         }
     }
 
-    @PostMapping("/file/update/{id}")
+    @PatchMapping("/file/update/{id}")
     public ResponseEntity<ResponseMessage> updateFileByID(@PathVariable String id, @RequestParam("file") MultipartFile file) {
         try {
             FileModel fileModel = fileService.updateFile(id, file);
