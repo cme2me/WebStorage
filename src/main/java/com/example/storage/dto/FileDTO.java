@@ -6,7 +6,8 @@ import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
-public class ResponseData {
+public class FileDTO {
+    private String id;
     private String fileName;
     private String downloadURL;
     private Long size;
