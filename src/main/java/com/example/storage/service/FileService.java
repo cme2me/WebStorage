@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.stream.Stream;
 
-@Slf4j
 @Service
 public class FileService {
 
@@ -26,25 +25,21 @@ public class FileService {
         this.fileRepository = fileRepository;
     }
 
-    public FileModel putFile(MultipartFile file) throws Exception {
-        try {
-            String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-            LocalDateTime date = LocalDateTime.now();
-            FileModel fileModel = new FileModel(fileName, file.getContentType(), file.getBytes(), date);
-            String message;
-            message = "Файл загружен " + file.getOriginalFilename();
-            msg();
-            log.info(message);
-            return fileRepository.save(fileModel);
-        } catch (IOException e) {
-            throw new FileException("Недопустимый размер файла" + e);
-        }
+    public void putFile(MultipartFile file) throws Exception {
+        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+        LocalDateTime date = LocalDateTime.now();
+        FileModel fileModel = new FileModel(fileName, file.getContentType(), file.getBytes(), date);
+        fileRepository.save(fileModel);
     }
 
-    private ResponseEntity<ResponseMessage> msg() {
-        String message = "";
-        message = "Файл загружен";
-        return ResponseEntity.ok().body(new ResponseMessage(message));
+    public ResponseEntity<ResponseMessage> msg() {
+        try {
+            String message = "";
+            message = "Файл загружен";
+            return ResponseEntity.ok().body(new ResponseMessage(message));
+        } catch (Exception e) {
+            throw new FileException("Размер превышен" + e);
+        }
     }
 
     public FileModel getFileByID(String id) throws Exception {
