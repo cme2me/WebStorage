@@ -21,9 +21,10 @@ public class FileModel {
     @Lob
     private byte[] data;
     private LocalDateTime date;
-
-    public FileModel(String name, String format, byte[] data, LocalDateTime date) {
+    private LocalDateTime updatedDate;
+    public FileModel(String name, String format, byte[] data, LocalDateTime date, LocalDateTime updatedDate) {
         this.name = name;
+        this.updatedDate = updatedDate;
         this.format = format;
         this.data = data;
         this.date = date;

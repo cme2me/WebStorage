@@ -1,9 +1,9 @@
 package com.example.storage.controller;
 
+import com.example.storage.dto.FileDTO;
+import com.example.storage.dto.ResponseMessage;
 import com.example.storage.exceptions.FileException;
 import com.example.storage.model.FileModel;
-import com.example.storage.dto.ResponseData;
-import com.example.storage.dto.ResponseMessage;
 import com.example.storage.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -12,12 +12,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-//@CrossOrigin("http://localhost:8081")
 public class FileController {
 
     private final
@@ -29,23 +27,20 @@ public class FileController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("file") MultipartFile file) {
-        try {
-           fileService.putFile(file);
-           return fileService.msg();
-        } catch (Exception e) {
-            throw new FileException("Недопустимый размер файла" + e);
-        }
+    public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("file") MultipartFile file) throws Exception {
+        fileService.putFile(file);
+        return fileService.msg();
     }
 
     @GetMapping("/allFiles")
-    public ResponseEntity<List<ResponseData>> getAllFiles() {
-        List<ResponseData> files = fileService.getAllFilesInStorage().map(fileModel -> {
+    public ResponseEntity<List<FileDTO>> getAllFiles() {
+        List<FileDTO> files = fileService.getAllFilesInStorage().map(fileModel -> {
             String fileDownloadURL = ServletUriComponentsBuilder.fromCurrentContextPath()
                     .path("/file/")
                     .path(fileModel.getId())
                     .toUriString();
-            return new ResponseData(
+            return new FileDTO(
+                    fileModel.getId(),
                     fileModel.getName(),
                     fileDownloadURL,
                     (long) fileModel.getData().length,
@@ -80,13 +75,8 @@ public class FileController {
     }
 
     @PatchMapping("/file/update/{id}")
-    public ResponseEntity<ResponseMessage> updateFileByID(@PathVariable String id, @RequestParam("file") MultipartFile file) {
-        try {
-            FileModel fileModel = fileService.updateFile(id, file);
-            return ResponseEntity.ok().body(new ResponseMessage("Файл успешно обновлен"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return ResponseEntity.badRequest().body(new ResponseMessage("Файл не был обновлен"));
+    public ResponseEntity<ResponseMessage> updateFileByID(@PathVariable("id") String id, @RequestBody FileDTO updateFile) throws Exception {
+        fileService.updateFile(updateFile);
+        return ResponseEntity.ok().body(new ResponseMessage("Файл обновлен" + updateFile.getFileName()));
     }
 }

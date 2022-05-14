@@ -1,18 +1,18 @@
 package com.example.storage.service;
 
+import com.example.storage.dto.FileDTO;
 import com.example.storage.dto.ResponseMessage;
-import com.example.storage.entity.repository.FileRepository;
 import com.example.storage.exceptions.FileException;
 import com.example.storage.model.FileModel;
-import lombok.extern.slf4j.Slf4j;
+import com.example.storage.repository.FileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 @Service
@@ -26,20 +26,25 @@ public class FileService {
     }
 
     public void putFile(MultipartFile file) throws Exception {
-        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-        LocalDateTime date = LocalDateTime.now();
-        FileModel fileModel = new FileModel(fileName, file.getContentType(), file.getBytes(), date);
-        fileRepository.save(fileModel);
+        try {
+            String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+            LocalDateTime date = LocalDateTime.now();
+            FileModel fileModel = new FileModel(fileName, file.getContentType(), file.getBytes(), date, date);
+            fileRepository.save(fileModel);
+        }catch (Exception e) {
+            throw new FileException("Файл не был загружен");
+        }
+    }
+
+    public void updateFile(FileDTO fileDTO) {
+        Optional<FileModel> fileModel = fileRepository.findById(fileDTO.getId());
+        fileModel.get().setName(fileDTO.getFileName());
     }
 
     public ResponseEntity<ResponseMessage> msg() {
-        try {
-            String message = "";
-            message = "Файл загружен";
-            return ResponseEntity.ok().body(new ResponseMessage(message));
-        } catch (Exception e) {
-            throw new FileException("Размер превышен" + e);
-        }
+        String message = "";
+        message = "Файл загружен";
+        return ResponseEntity.ok().body(new ResponseMessage(message));
     }
 
     public FileModel getFileByID(String id) throws Exception {
@@ -52,12 +57,5 @@ public class FileService {
 
     public void deleteFileByID(String id) {
         fileRepository.deleteById(id);
-    }
-
-    public FileModel updateFile(String id, MultipartFile file) throws IOException {
-        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-        fileRepository.deleteById(id);
-        LocalDateTime date = LocalDateTime.now();
-        return fileRepository.save(new FileModel(fileName, file.getContentType(), file.getBytes(), date));
     }
 }
