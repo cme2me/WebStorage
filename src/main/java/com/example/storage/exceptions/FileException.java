@@ -4,7 +4,7 @@ public class FileException extends RuntimeException {
     private String message;
 
     public FileException(String message) {
-        this.message = message;
+        super(message);
     }
 
     @Override
