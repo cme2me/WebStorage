@@ -12,7 +12,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 @Service
@@ -36,9 +36,18 @@ public class FileService {
         }
     }
 
-    public void updateFile(FileDTO fileDTO) {
-        Optional<FileModel> fileModel = fileRepository.findById(fileDTO.getId());
-        fileModel.get().setName(fileDTO.getFileName());
+    public FileModel updateFile(FileDTO fileDTO,String id, LocalDateTime changedTime) {
+        FileModel fileDB = fileRepository.findById(id).get();
+        if (Objects.nonNull(fileDTO.getFileName()) && !"".equalsIgnoreCase(fileDTO.getFileName())) {
+            fileDB.setName(fileDTO.getFileName());
+        }
+        if (Objects.nonNull(fileDTO.getUploadDate()) && !"".equalsIgnoreCase(String.valueOf(fileDTO.getUploadDate()))) {
+
+        }
+        if (Objects.nonNull(fileDTO.getChangeDate()) && !"".equalsIgnoreCase(String.valueOf(fileDTO.getChangeDate()))) {
+            fileDB.setUpdatedDate(LocalDateTime.now());
+        }
+        return fileRepository.save(fileDB);
     }
 
     public ResponseEntity<ResponseMessage> msg() {

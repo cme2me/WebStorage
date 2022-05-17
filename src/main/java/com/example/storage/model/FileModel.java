@@ -1,16 +1,23 @@
 package com.example.storage.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Lob;
 import java.time.LocalDateTime;
 
 @Entity
 /*@Table(name = "storage_files")*/
 @NoArgsConstructor
+@AllArgsConstructor
 @Data
+@Builder
 public class FileModel {
     @Id
     @GeneratedValue(generator = "uuid")
