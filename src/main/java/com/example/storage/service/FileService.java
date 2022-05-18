@@ -12,7 +12,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 @Service
@@ -25,20 +25,30 @@ public class FileService {
         this.fileRepository = fileRepository;
     }
 
-    public void putFile(MultipartFile file) throws Exception {
+    public ResponseEntity<ResponseMessage> putFile(MultipartFile file) throws Exception {
         try {
             String fileName = StringUtils.cleanPath(file.getOriginalFilename());
             LocalDateTime date = LocalDateTime.now();
             FileModel fileModel = new FileModel(fileName, file.getContentType(), file.getBytes(), date, date);
             fileRepository.save(fileModel);
+            return ResponseEntity.ok().body(new ResponseMessage("File uploaded"));
         }catch (Exception e) {
             throw new FileException("Файл не был загружен");
         }
     }
 
-    public void updateFile(FileDTO fileDTO) {
-        Optional<FileModel> fileModel = fileRepository.findById(fileDTO.getId());
-        fileModel.get().setName(fileDTO.getFileName());
+    public FileModel updateFile(FileDTO fileDTO,String id, LocalDateTime changedTime) {
+        FileModel fileDB = fileRepository.findById(id).get();
+        if (Objects.nonNull(fileDTO.getFileName()) && !"".equalsIgnoreCase(fileDTO.getFileName())) {
+            fileDB.setName(fileDTO.getFileName());
+        }
+        if (Objects.nonNull(fileDTO.getUploadDate()) && !"".equalsIgnoreCase(String.valueOf(fileDTO.getUploadDate()))) {
+
+        }
+        if (Objects.nonNull(fileDTO.getChangeDate()) && !"".equalsIgnoreCase(String.valueOf(fileDTO.getChangeDate()))) {
+            fileDB.setUpdatedDate(LocalDateTime.now());
+        }
+        return fileRepository.save(fileDB);
     }
 
     public ResponseEntity<ResponseMessage> msg() {

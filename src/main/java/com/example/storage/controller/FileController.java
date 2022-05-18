@@ -9,9 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,9 +29,12 @@ public class FileController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("file") MultipartFile file) throws Exception {
-        fileService.putFile(file);
-        return fileService.msg();
+    public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("file") MultipartFile file) throws MultipartException {
+        try {
+            return fileService.putFile(file);
+        } catch (Exception e) {
+            throw new FileException("File is not uploaded");
+        }
     }
 
     @GetMapping("/allFiles")
@@ -46,7 +51,6 @@ public class FileController {
                     (long) fileModel.getData().length,
                     fileModel.getFormat(),
                     fileModel.getDate()
-                    // время обновления, коммент
             );
         }).collect(Collectors.toList());
         return ResponseEntity.ok().body(files);
@@ -74,9 +78,10 @@ public class FileController {
         }
     }
 
-    @PatchMapping("/file/update/{id}")
-    public ResponseEntity<ResponseMessage> updateFileByID(@PathVariable("id") String id, @RequestBody FileDTO updateFile) throws Exception {
-        fileService.updateFile(updateFile);
-        return ResponseEntity.ok().body(new ResponseMessage("Файл обновлен" + updateFile.getFileName()));
+    @PutMapping("/file/update/{id}")
+    public ResponseEntity<ResponseMessage> updateFileByID(@RequestBody FileDTO fileDTO, @PathVariable("id") String id) throws Exception {
+        LocalDateTime updateTime = LocalDateTime.now();
+        fileService.updateFile(fileDTO, id, updateTime);
+        return ResponseEntity.ok().body(new ResponseMessage("Файл обновлен " + fileDTO.getFileName()));
     }
 }
