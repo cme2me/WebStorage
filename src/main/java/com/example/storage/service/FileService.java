@@ -25,12 +25,13 @@ public class FileService {
         this.fileRepository = fileRepository;
     }
 
-    public void putFile(MultipartFile file) throws Exception {
+    public ResponseEntity<ResponseMessage> putFile(MultipartFile file) throws Exception {
         try {
             String fileName = StringUtils.cleanPath(file.getOriginalFilename());
             LocalDateTime date = LocalDateTime.now();
             FileModel fileModel = new FileModel(fileName, file.getContentType(), file.getBytes(), date, date);
             fileRepository.save(fileModel);
+            return ResponseEntity.ok().body(new ResponseMessage("File uploaded"));
         }catch (Exception e) {
             throw new FileException("Файл не был загружен");
         }

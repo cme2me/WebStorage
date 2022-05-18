@@ -31,11 +31,10 @@ public class FileController {
     @PostMapping("/upload")
     public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("file") MultipartFile file) throws MultipartException {
         try {
-            fileService.putFile(file);
+            return fileService.putFile(file);
         } catch (Exception e) {
             throw new FileException("File is not uploaded");
         }
-        return fileService.msg();
     }
 
     @GetMapping("/allFiles")
@@ -52,7 +51,6 @@ public class FileController {
                     (long) fileModel.getData().length,
                     fileModel.getFormat(),
                     fileModel.getDate()
-                    // время обновления, коммент
             );
         }).collect(Collectors.toList());
         return ResponseEntity.ok().body(files);
