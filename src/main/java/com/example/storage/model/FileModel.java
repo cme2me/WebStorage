@@ -29,6 +29,7 @@ public class FileModel {
     private byte[] data;
     private LocalDateTime date;
     private LocalDateTime updatedDate;
+
     public FileModel(String name, String format, byte[] data, LocalDateTime date, LocalDateTime updatedDate) {
         this.name = name;
         this.updatedDate = updatedDate;

@@ -2,7 +2,6 @@ package com.example.storage.controller;
 
 import com.example.storage.dto.FileDTO;
 import com.example.storage.dto.ResponseMessage;
-import com.example.storage.exceptions.FileException;
 import com.example.storage.model.FileModel;
 import com.example.storage.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +32,7 @@ public class FileController {
         try {
             return fileService.putFile(file);
         } catch (Exception e) {
-            throw new FileException("File is not uploaded");
+            throw new RuntimeException(e);
         }
     }
 
