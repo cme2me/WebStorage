@@ -1,6 +1,7 @@
 package com.example.storage.service;
 
 import com.example.storage.dto.FileDTO;
+import com.example.storage.dto.FilesName;
 import com.example.storage.dto.ResponseMessage;
 import com.example.storage.exceptions.FileException;
 import com.example.storage.model.FileModel;
@@ -13,7 +14,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -27,25 +30,24 @@ public class FileService {
     }
 
     public ResponseEntity<ResponseMessage> putFile(MultipartFile file) {
-        try {
-            String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-            LocalDateTime date = LocalDateTime.now();
-            FileModel fileModel = new FileModel(fileName, file.getContentType(), file.getBytes(), date, date);
-            fileRepository.save(fileModel);
-            return ResponseEntity.ok().body(new ResponseMessage("File uploaded"));
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException();
+        if (!file.isEmpty()) {
+            try {
+                String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+                LocalDateTime date = LocalDateTime.now();
+                FileModel fileModel = new FileModel(fileName, file.getContentType(), file.getBytes(), date, date);
+                fileRepository.save(fileModel);
+                return ResponseEntity.ok().body(new ResponseMessage("File uploaded"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+        return ResponseEntity.internalServerError().body(new ResponseMessage("Missing uploading file"));
     }
 
     public FileModel updateFile(FileDTO fileDTO, String id, LocalDateTime changedTime) {
         FileModel fileDB = fileRepository.findById(id).get();
         if (Objects.nonNull(fileDTO.getFileName()) && !"".equalsIgnoreCase(fileDTO.getFileName())) {
             fileDB.setName(fileDTO.getFileName());
-        }
-        if (Objects.nonNull(fileDTO.getUploadDate()) && !"".equalsIgnoreCase(String.valueOf(fileDTO.getUploadDate()))) {
-
         }
         if (Objects.nonNull(fileDTO.getChangeDate()) && !"".equalsIgnoreCase(String.valueOf(fileDTO.getChangeDate()))) {
             fileDB.setUpdatedDate(LocalDateTime.now());
@@ -55,6 +57,11 @@ public class FileService {
 
     public FileModel getFileByID(String id) {
         return fileRepository.findById(id).get();
+    }
+
+    public ResponseEntity<List<FilesName>> getFilesName() {
+        List<FilesName> filesName = getAllFilesInStorage().map(fileModel -> new FilesName(fileModel.getName())).collect(Collectors.toList());
+        return ResponseEntity.ok().body(filesName);
     }
 
     public Stream<FileModel> getAllFilesInStorage() {
