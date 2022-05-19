@@ -56,7 +56,7 @@ public class FileController {
     }
 
     @GetMapping("/file/{id}")
-    public ResponseEntity<byte[]> getFileByID(@PathVariable String id) throws Exception {
+    public ResponseEntity<byte[]> getFileByID(@PathVariable String id) {
         FileModel fileModel = fileService.getFileByID(id);
 
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileModel.getName() + "")
@@ -65,20 +65,11 @@ public class FileController {
 
     @PostMapping("/file/delete/{id}")
     public ResponseEntity<ResponseMessage> deleteFileByID(@PathVariable String id) {
-        String message = "";
-        try {
-            fileService.deleteFileByID(id);
-            message = "файл успешно удален";
-            return ResponseEntity.ok().body(new ResponseMessage(message));
-        } catch (Exception e) {
-            e.printStackTrace();
-            message = "файл не удален";
-            return ResponseEntity.badRequest().body(new ResponseMessage(message));
-        }
+        return fileService.deleteFileByID(id);
     }
 
     @PutMapping("/file/update/{id}")
-    public ResponseEntity<ResponseMessage> updateFileByID(@RequestBody FileDTO fileDTO, @PathVariable("id") String id) throws Exception {
+    public ResponseEntity<ResponseMessage> updateFileByID(@RequestBody FileDTO fileDTO, @PathVariable("id") String id) {
         LocalDateTime updateTime = LocalDateTime.now();
         fileService.updateFile(fileDTO, id, updateTime);
         return ResponseEntity.ok().body(new ResponseMessage("Файл обновлен " + fileDTO.getFileName()));

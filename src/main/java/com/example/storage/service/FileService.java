@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -25,15 +26,16 @@ public class FileService {
         this.fileRepository = fileRepository;
     }
 
-    public ResponseEntity<ResponseMessage> putFile(MultipartFile file) throws Exception {
+    public ResponseEntity<ResponseMessage> putFile(MultipartFile file) {
         try {
             String fileName = StringUtils.cleanPath(file.getOriginalFilename());
             LocalDateTime date = LocalDateTime.now();
             FileModel fileModel = new FileModel(fileName, file.getContentType(), file.getBytes(), date, date);
             fileRepository.save(fileModel);
             return ResponseEntity.ok().body(new ResponseMessage("File uploaded"));
-        } catch (Exception e) {
-            throw new FileException("Файл не был загружен");
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException();
         }
     }
 
@@ -51,7 +53,7 @@ public class FileService {
         return fileRepository.save(fileDB);
     }
 
-    public FileModel getFileByID(String id) throws Exception {
+    public FileModel getFileByID(String id) {
         return fileRepository.findById(id).get();
     }
 
@@ -59,7 +61,13 @@ public class FileService {
         return fileRepository.findAll().stream();
     }
 
-    public void deleteFileByID(String id) {
-        fileRepository.deleteById(id);
+    public ResponseEntity<ResponseMessage> deleteFileByID(String id) {
+        try {
+            fileRepository.deleteById(id);
+            return ResponseEntity.ok().body(new ResponseMessage("File deleted"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException();
+        }
     }
 }
