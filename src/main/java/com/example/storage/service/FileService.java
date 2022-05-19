@@ -32,12 +32,12 @@ public class FileService {
             FileModel fileModel = new FileModel(fileName, file.getContentType(), file.getBytes(), date, date);
             fileRepository.save(fileModel);
             return ResponseEntity.ok().body(new ResponseMessage("File uploaded"));
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw new FileException("Файл не был загружен");
         }
     }
 
-    public FileModel updateFile(FileDTO fileDTO,String id, LocalDateTime changedTime) {
+    public FileModel updateFile(FileDTO fileDTO, String id, LocalDateTime changedTime) {
         FileModel fileDB = fileRepository.findById(id).get();
         if (Objects.nonNull(fileDTO.getFileName()) && !"".equalsIgnoreCase(fileDTO.getFileName())) {
             fileDB.setName(fileDTO.getFileName());
@@ -49,12 +49,6 @@ public class FileService {
             fileDB.setUpdatedDate(LocalDateTime.now());
         }
         return fileRepository.save(fileDB);
-    }
-
-    public ResponseEntity<ResponseMessage> msg() {
-        String message = "";
-        message = "Файл загружен";
-        return ResponseEntity.ok().body(new ResponseMessage(message));
     }
 
     public FileModel getFileByID(String id) throws Exception {
