@@ -1,6 +1,7 @@
 package com.example.storage.controller;
 
 import com.example.storage.dto.FileDTO;
+import com.example.storage.dto.FilesName;
 import com.example.storage.dto.ResponseMessage;
 import com.example.storage.model.FileModel;
 import com.example.storage.service.FileService;
@@ -36,11 +37,16 @@ public class FileController {
         }
     }
 
-    @GetMapping("/allFiles")
+    @GetMapping("/files")
+    public ResponseEntity<List<FilesName>> getFileName() {
+        return fileService.getFilesName();
+    }
+
+    @GetMapping("/files/info")
     public ResponseEntity<List<FileDTO>> getAllFiles() {
         List<FileDTO> files = fileService.getAllFilesInStorage().map(fileModel -> {
             String fileDownloadURL = ServletUriComponentsBuilder.fromCurrentContextPath()
-                    .path("/file/")
+                    .path("/download/")
                     .path(fileModel.getId())
                     .toUriString();
             return new FileDTO(
@@ -55,10 +61,9 @@ public class FileController {
         return ResponseEntity.ok().body(files);
     }
 
-    @GetMapping("/file/{id}")
+    @GetMapping("/download/{id}")
     public ResponseEntity<byte[]> getFileByID(@PathVariable String id) {
         FileModel fileModel = fileService.getFileByID(id);
-
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileModel.getName() + "")
                 .body(fileModel.getData());
     }
