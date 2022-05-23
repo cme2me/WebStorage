@@ -29,9 +29,9 @@ public class FileController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("file") MultipartFile file) throws MultipartException {
+    public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("file") MultipartFile file, @RequestParam String comment) throws MultipartException {
         try {
-            return fileService.putFile(file);
+            return fileService.putFile(file, comment);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -55,7 +55,8 @@ public class FileController {
                     fileDownloadURL,
                     (long) fileModel.getData().length,
                     fileModel.getFormat(),
-                    fileModel.getDate()
+                    fileModel.getDate(),
+                    fileModel.getComment()
             );
         }).collect(Collectors.toList());
         return ResponseEntity.ok().body(files);
@@ -75,8 +76,7 @@ public class FileController {
 
     @PutMapping("/file/update/{id}")
     public ResponseEntity<ResponseMessage> updateFileByID(@RequestBody FileDTO fileDTO, @PathVariable("id") String id) {
-        LocalDateTime updateTime = LocalDateTime.now();
-        fileService.updateFile(fileDTO, id, updateTime);
+        fileService.updateFile(fileDTO, id);
         return ResponseEntity.ok().body(new ResponseMessage("Файл обновлен " + fileDTO.getFileName()));
     }
 }

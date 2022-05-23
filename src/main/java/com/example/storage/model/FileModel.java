@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -26,12 +27,14 @@ public class FileModel {
     private byte[] data;
     private LocalDateTime date;
     private LocalDateTime updatedDate;
+    private String comment;
 
-    public FileModel(String name, String format, byte[] data, LocalDateTime date, LocalDateTime updatedDate) {
+    public FileModel(String name, String format, byte[] data, LocalDateTime date, LocalDateTime updatedDate, String comment) {
         this.name = name;
         this.updatedDate = updatedDate;
         this.format = format;
         this.data = data;
         this.date = date;
+        this.comment = comment;
     }
 }
