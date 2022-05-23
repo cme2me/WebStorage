@@ -17,14 +17,15 @@ public class FileDTO {
     private String fileFormat;
     private LocalDateTime uploadDate;
     private LocalDateTime changeDate;
-    /*private String comment;*/
+    private String comment;
 
-    public FileDTO(String id, String fileName, String downloadURL, Long size, String fileFormat, LocalDateTime uploadDate) {
+    public FileDTO(String id, String fileName, String downloadURL, Long size, String fileFormat, LocalDateTime uploadDate, String comment) {
         this.id = id;
         this.fileName = fileName;
         this.downloadURL = downloadURL;
         this.size = size;
         this.fileFormat = fileFormat;
         this.uploadDate = uploadDate;
+        this.comment = comment;
     }
 }
