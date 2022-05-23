@@ -29,12 +29,12 @@ public class FileService {
         this.fileRepository = fileRepository;
     }
 
-    public ResponseEntity<ResponseMessage> putFile(MultipartFile file) {
+    public ResponseEntity<ResponseMessage> putFile(MultipartFile file, String comment) {
         if (!file.isEmpty()) {
             try {
                 String fileName = StringUtils.cleanPath(file.getOriginalFilename());
                 LocalDateTime date = LocalDateTime.now();
-                FileModel fileModel = new FileModel(fileName, file.getContentType(), file.getBytes(), date, date);
+                FileModel fileModel = new FileModel(fileName, file.getContentType(), file.getBytes(), date, date, comment);
                 fileRepository.save(fileModel);
                 return ResponseEntity.ok().body(new ResponseMessage("File uploaded"));
             } catch (IOException e) {
@@ -44,13 +44,13 @@ public class FileService {
         return ResponseEntity.internalServerError().body(new ResponseMessage("Missing uploading file"));
     }
 
-    public FileModel updateFile(FileDTO fileDTO, String id, LocalDateTime changedTime) {
+    public FileModel updateFile(FileDTO fileDTO, String id) {
         FileModel fileDB = fileRepository.findById(id).get();
         if (Objects.nonNull(fileDTO.getFileName()) && !"".equalsIgnoreCase(fileDTO.getFileName())) {
             fileDB.setName(fileDTO.getFileName());
         }
         if (Objects.nonNull(fileDTO.getChangeDate()) && !"".equalsIgnoreCase(String.valueOf(fileDTO.getChangeDate()))) {
-            fileDB.setUpdatedDate(LocalDateTime.now());
+            fileDB.setUpdatedDate(fileDB.getUpdatedDate());
         }
         return fileRepository.save(fileDB);
     }
