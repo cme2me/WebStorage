@@ -6,6 +6,7 @@ import com.example.storage.dto.ResponseMessage;
 import com.example.storage.model.FileModel;
 import com.example.storage.repository.FileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -41,7 +42,7 @@ public class FileService {
                 e.printStackTrace();
             }
         }
-        return ResponseEntity.internalServerError().body(new ResponseMessage("Missing uploading file"));
+        return ResponseEntity.badRequest().body(new ResponseMessage("Missing uploading file"));
     }
 
     public FileModel updateFile(FileDTO fileDTO, String id) {
@@ -49,8 +50,11 @@ public class FileService {
         if (Objects.nonNull(fileDTO.getFileName()) && !"".equalsIgnoreCase(fileDTO.getFileName())) {
             fileDB.setName(fileDTO.getFileName());
         }
-        if (Objects.nonNull(fileDTO.getChangeDate()) && !"".equalsIgnoreCase(String.valueOf(fileDTO.getChangeDate()))) {
-            fileDB.setUpdatedDate(fileDB.getUpdatedDate());
+        if (Objects.nonNull(fileDTO.getComment())) {
+            fileDB.setComment(fileDTO.getComment());
+        }
+        if (Objects.nonNull(fileDTO.getChangeDate())) {
+            fileDB.setUpdatedDate(fileDTO.getChangeDate());
         }
         return fileRepository.save(fileDB);
     }
@@ -66,7 +70,8 @@ public class FileService {
     }
 
     public Stream<FileModel> getAllFilesInStorage() {
-        return fileRepository.findAll().stream();
+        Sort sort = Sort.by(Sort.Order.asc("name"));
+        return fileRepository.findAll(sort).stream();
     }
 
     public ResponseEntity<List<FileDTO>> showAllFiles() {
