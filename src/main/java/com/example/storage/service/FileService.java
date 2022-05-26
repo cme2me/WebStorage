@@ -3,7 +3,6 @@ package com.example.storage.service;
 import com.example.storage.dto.FileDTO;
 import com.example.storage.dto.FilesName;
 import com.example.storage.dto.ResponseMessage;
-import com.example.storage.exceptions.FileException;
 import com.example.storage.model.FileModel;
 import com.example.storage.repository.FileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -59,6 +59,7 @@ public class FileService {
         return fileRepository.findById(id).get();
     }
 
+
     public ResponseEntity<List<FilesName>> getFilesName() {
         List<FilesName> filesName = getAllFilesInStorage().map(fileModel -> new FilesName(fileModel.getName())).collect(Collectors.toList());
         return ResponseEntity.ok().body(filesName);
@@ -66,6 +67,25 @@ public class FileService {
 
     public Stream<FileModel> getAllFilesInStorage() {
         return fileRepository.findAll().stream();
+    }
+
+    public ResponseEntity<List<FileDTO>> showAllFiles() {
+        List<FileDTO> files = getAllFilesInStorage().map(fileModel -> {
+            String fileDownloadURL = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/download/")
+                    .path(fileModel.getId())
+                    .toUriString();
+            return new FileDTO(
+                    fileModel.getId(),
+                    fileModel.getName(),
+                    fileDownloadURL,
+                    (long) fileModel.getData().length,
+                    fileModel.getFormat(),
+                    fileModel.getDate(),
+                    fileModel.getComment()
+            );
+        }).collect(Collectors.toList());
+        return ResponseEntity.ok().body(files);
     }
 
     public ResponseEntity<ResponseMessage> deleteFileByID(String id) {

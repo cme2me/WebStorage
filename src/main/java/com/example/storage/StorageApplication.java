@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Import;
 @SpringBootApplication
 public class StorageApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(StorageApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(StorageApplication.class, args);
+    }
 }

@@ -12,7 +12,7 @@ public class FileExceptionHandler {
 
     @ExceptionHandler(MultipartException.class)
     public ResponseEntity<ResponseMessage> uploadException(Throwable t) {
-        return ResponseEntity.internalServerError().body(new ResponseMessage("Файл не был загружен, максимальный размер: 15МБ. " + t.getMessage()));
+        return ResponseEntity.internalServerError().body(new ResponseMessage("Файл не был загружен, " + t.getMessage()));
     }
 
     @ExceptionHandler(RuntimeException.class)
