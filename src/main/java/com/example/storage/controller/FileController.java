@@ -36,7 +36,7 @@ public class FileController {
     }
 
     @GetMapping("/files/info")
-    public ResponseEntity<List<FileDTO>> getAllFiles() {
+    public ResponseEntity<List<FileDTO>> getAllInformationAboutFiles() {
         return fileService.showAllFiles();
     }
 
