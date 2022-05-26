@@ -11,11 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 public class FileController {
@@ -30,11 +27,7 @@ public class FileController {
 
     @PostMapping("/upload")
     public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("file") MultipartFile file, @RequestParam String comment) throws MultipartException {
-        try {
-            return fileService.putFile(file, comment);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return fileService.putFile(file, comment);
     }
 
     @GetMapping("/files")
@@ -44,22 +37,7 @@ public class FileController {
 
     @GetMapping("/files/info")
     public ResponseEntity<List<FileDTO>> getAllFiles() {
-        List<FileDTO> files = fileService.getAllFilesInStorage().map(fileModel -> {
-            String fileDownloadURL = ServletUriComponentsBuilder.fromCurrentContextPath()
-                    .path("/download/")
-                    .path(fileModel.getId())
-                    .toUriString();
-            return new FileDTO(
-                    fileModel.getId(),
-                    fileModel.getName(),
-                    fileDownloadURL,
-                    (long) fileModel.getData().length,
-                    fileModel.getFormat(),
-                    fileModel.getDate(),
-                    fileModel.getComment()
-            );
-        }).collect(Collectors.toList());
-        return ResponseEntity.ok().body(files);
+        return fileService.showAllFiles();
     }
 
     @GetMapping("/download/{id}")
