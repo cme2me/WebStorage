@@ -2,6 +2,7 @@ package com.example.storage.service;
 
 import com.example.storage.dto.FileDTO;
 import com.example.storage.dto.FilesName;
+import com.example.storage.dto.FilterVariable;
 import com.example.storage.dto.ResponseMessage;
 import com.example.storage.model.FileModel;
 import com.example.storage.repository.FileRepository;
@@ -71,7 +72,9 @@ public class FileService {
     public Stream<FileModel> getAllFilesInStorage() {
         return fileRepository.findAll().stream();
     }
-    public List<FileModel> filterByName(String name) {
+    public List<FileModel> filterByName(String name, LocalDateTime timeBefore, LocalDateTime timeAfter, String fileType) {
+        FilterVariable filterVariable = new FilterVariable(name, timeBefore, timeAfter, fileType);
+        fileRepository.findByDateBefore(filterVariable.getTimeFrom());
         return fileRepository.filterByName(name);
     }
 
