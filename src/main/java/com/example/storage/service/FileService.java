@@ -63,15 +63,16 @@ public class FileService {
         return fileRepository.findById(id).get();
     }
 
-
     public ResponseEntity<List<FilesName>> getFilesName() {
         List<FilesName> filesName = getAllFilesInStorage().map(fileModel -> new FilesName(fileModel.getName())).collect(Collectors.toList());
         return ResponseEntity.ok().body(filesName);
     }
 
     public Stream<FileModel> getAllFilesInStorage() {
-        Sort sort = Sort.by(Sort.Order.asc("name"));
-        return fileRepository.findAll(sort).stream();
+        return fileRepository.findAll().stream();
+    }
+    public List<FileModel> filterByName(String name) {
+        return fileRepository.filterByName(name);
     }
 
     public ResponseEntity<List<FileDTO>> showAllFiles() {
@@ -87,6 +88,7 @@ public class FileService {
                     (long) fileModel.getData().length,
                     fileModel.getFormat(),
                     fileModel.getDate(),
+                    fileModel.getUpdatedDate(),
                     fileModel.getComment()
             );
         }).collect(Collectors.toList());
