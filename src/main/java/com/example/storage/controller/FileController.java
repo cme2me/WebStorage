@@ -46,6 +46,10 @@ public class FileController {
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileModel.getName() + "")
                 .body(fileModel.getData());
     }
+    @GetMapping("/filter/{name}")
+    public List<FileModel> fileModels(@PathVariable("name") String name) {
+        return fileService.filterByName(name);
+    }
 
     @PostMapping("/file/delete/{id}")
     public ResponseEntity<ResponseMessage> deleteFileByID(@PathVariable String id) {

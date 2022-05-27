@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -25,7 +26,9 @@ public class FileModel {
     private String format;
     @Lob
     private byte[] data;
+    @CreationTimestamp
     private LocalDateTime date;
+    @UpdateTimestamp
     private LocalDateTime updatedDate;
     private String comment;
 
