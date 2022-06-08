@@ -6,7 +6,6 @@ import com.example.storage.dto.ResponseMessage;
 import com.example.storage.model.FileModel;
 import com.example.storage.repository.FileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -63,15 +62,13 @@ public class FileService {
         return fileRepository.findById(id).get();
     }
 
-
     public ResponseEntity<List<FilesName>> getFilesName() {
         List<FilesName> filesName = getAllFilesInStorage().map(fileModel -> new FilesName(fileModel.getName())).collect(Collectors.toList());
         return ResponseEntity.ok().body(filesName);
     }
 
     public Stream<FileModel> getAllFilesInStorage() {
-        Sort sort = Sort.by(Sort.Order.asc("name"));
-        return fileRepository.findAll(sort).stream();
+        return fileRepository.findAll().stream();
     }
 
     public ResponseEntity<List<FileDTO>> showAllFiles() {
@@ -101,5 +98,9 @@ public class FileService {
             e.printStackTrace();
             throw new RuntimeException();
         }
+    }
+
+    public ResponseEntity<List<FileModel>> findFilesByName(String name) {
+        return ResponseEntity.ok().body(fileRepository.findByName(name));
     }
 }
