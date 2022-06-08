@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @RestController
@@ -60,5 +61,10 @@ public class FileController {
     public ResponseEntity<ResponseMessage> updateFileByID(@RequestBody FileDTO fileDTO, @PathVariable("id") String id) {
         fileService.updateFile(fileDTO, id);
         return ResponseEntity.ok().body(new ResponseMessage("Файл обновлен " + fileDTO.getFileName()));
+    }
+    @Transactional
+    @GetMapping("api/files/{name}")
+    public ResponseEntity<List<FileModel>> findFilesByName(@PathVariable("name") String name) {
+        return fileService.findFilesByName(name);
     }
 }

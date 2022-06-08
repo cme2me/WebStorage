@@ -7,7 +7,6 @@ import com.example.storage.dto.ResponseMessage;
 import com.example.storage.model.FileModel;
 import com.example.storage.repository.FileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -71,12 +70,6 @@ public class FileService {
 
     public Stream<FileModel> getAllFilesInStorage() {
         return fileRepository.findAll().stream();
-    }
-    public List<FileModel> filterByName(String name, LocalDateTime timeBefore, LocalDateTime timeAfter, String fileType) {
-        FilterVariable filterVariable = new FilterVariable(name, timeBefore, timeAfter, fileType);
-        fileRepository.findByDateBefore(filterVariable.getTimeFrom());
-        return fileRepository.filterByName(name);
-    }
 
     public ResponseEntity<List<FileDTO>> showAllFiles() {
         List<FileDTO> files = getAllFilesInStorage().map(fileModel -> {
@@ -106,5 +99,9 @@ public class FileService {
             e.printStackTrace();
             throw new RuntimeException();
         }
+    }
+
+    public ResponseEntity<List<FileModel>> findFilesByName(String name) {
+        return ResponseEntity.ok().body(fileRepository.findByName(name));
     }
 }
