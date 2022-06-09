@@ -19,7 +19,7 @@ public class FileDTO {
     private LocalDateTime changeDate;
     private String comment;
 
-    public FileDTO(String id, String fileName, String downloadURL, Long size, String fileFormat, LocalDateTime uploadDate, String comment) {
+    public FileDTO(String id, String fileName, String downloadURL, Long size, String fileFormat, LocalDateTime uploadDate, String comment, LocalDateTime changeDate) {
         this.id = id;
         this.fileName = fileName;
         this.downloadURL = downloadURL;
@@ -27,5 +27,6 @@ public class FileDTO {
         this.fileFormat = fileFormat;
         this.uploadDate = uploadDate;
         this.comment = comment;
+        this.changeDate = changeDate;
     }
 }
