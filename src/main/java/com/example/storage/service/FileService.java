@@ -71,6 +71,14 @@ public class FileService {
         return fileRepository.findAll().stream();
     }
 
+    public Stream<FileModel> getFilteredFilesInStorage(String name) {
+        return fileRepository.findByName(name).stream();
+    }
+
+    public Stream<FileModel> getFilteredFilesInStorageByDate(LocalDateTime from, LocalDateTime to) {
+        return fileRepository.findByFromDateAndToDate(from, to).stream();
+    }
+
     public ResponseEntity<List<FileDTO>> showAllFiles() {
         List<FileDTO> files = getAllFilesInStorage().map(fileModel -> {
             String fileDownloadURL = ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -84,13 +92,14 @@ public class FileService {
                     (long) fileModel.getData().length,
                     fileModel.getFormat(),
                     fileModel.getDate(),
-                    fileModel.getComment()
+                    fileModel.getComment(),
+                    fileModel.getUpdatedDate()
             );
         }).collect(Collectors.toList());
         return ResponseEntity.ok().body(files);
     }
 
-    public ResponseEntity<ResponseMessage> deleteFileByID(String id) {
+    public ResponseEntity<?> deleteFileByID(String id) {
         try {
             fileRepository.deleteById(id);
             return ResponseEntity.ok().body(new ResponseMessage("File deleted"));
@@ -100,7 +109,43 @@ public class FileService {
         }
     }
 
-    public ResponseEntity<List<FileModel>> findFilesByName(String name) {
-        return ResponseEntity.ok().body(fileRepository.findByName(name));
+    public ResponseEntity<List<FileDTO>> findFilesByName(String name) {
+        List<FileDTO> files = getFilteredFilesInStorage(name).map(fileModel -> {
+            String fileDownloadURL = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/download/")
+                    .path(fileModel.getId())
+                    .toUriString();
+            return new FileDTO(
+                    fileModel.getId(),
+                    fileModel.getName(),
+                    fileDownloadURL,
+                    (long) fileModel.getData().length,
+                    fileModel.getFormat(),
+                    fileModel.getDate(),
+                    fileModel.getComment(),
+                    fileModel.getUpdatedDate()
+        );
+        }).collect(Collectors.toList());
+        return ResponseEntity.ok().body(files);
+    }
+
+    public ResponseEntity<List<FileDTO>> findFilesByDates(LocalDateTime from, LocalDateTime to) {
+        List<FileDTO> files = getFilteredFilesInStorageByDate(from, to).map(fileModel -> {
+            String fileDownloadURL = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/download/")
+                    .path(fileModel.getId())
+                    .toUriString();
+            return new FileDTO(
+                    fileModel.getId(),
+                    fileModel.getName(),
+                    fileDownloadURL,
+                    (long) fileModel.getData().length,
+                    fileModel.getFormat(),
+                    fileModel.getDate(),
+                    fileModel.getComment(),
+                    fileModel.getUpdatedDate()
+            );
+        }).collect(Collectors.toList());
+        return ResponseEntity.ok().body(files);
     }
 }
