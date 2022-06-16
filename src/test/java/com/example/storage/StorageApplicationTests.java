@@ -1,22 +1,42 @@
 package com.example.storage;
 
-import com.example.storage.repository.FileRepository;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.web.servlet.MockMvc;
+
+import java.io.IOException;
 
 @SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class StorageApplicationTests {
-    @MockBean
-    FileRepository repository;
-    private final MockMvc mockMvc;
 
-    public StorageApplicationTests(MockMvc mockMvc) {
-        this.mockMvc = mockMvc;
+    @Autowired
+    private TestLogic testLogic;
+
+    /*@Test
+    @DisplayName("Test save method")
+    public void saveFile() throws IOException {
+        testLogic.testFileSave();
+    }*/
+
+    @Test
+    @DisplayName("Test download method")
+    public void downloadFile() {
+
     }
 
+    @Test
+    @DisplayName("Test get all files")
+    public void findAllFiles() throws IOException {
+        testLogic.testFindAll();
+    }
 
-    public void uploadFileSuccess() throws Exception {
-
+    @Test
+    @DisplayName("Test save repo method")
+    public void testCreateFile() throws IOException {
+        testLogic.createFile();
     }
 }
