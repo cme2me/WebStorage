@@ -2,9 +2,11 @@ package com.example.storage.service;
 
 import com.example.storage.dto.FileDTO;
 import com.example.storage.dto.FilesName;
+import com.example.storage.dto.FilterVariable;
 import com.example.storage.dto.ResponseMessage;
 import com.example.storage.model.FileModel;
 import com.example.storage.repository.FileRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -23,10 +25,12 @@ import java.util.stream.Stream;
 public class FileService {
 
     private final FileRepository fileRepository;
+    private final ModelMapper mapper;
 
     @Autowired
-    public FileService(FileRepository fileRepository) {
+    public FileService(FileRepository fileRepository, ModelMapper mapper) {
         this.fileRepository = fileRepository;
+        this.mapper = mapper;
     }
 
     public ResponseEntity<ResponseMessage> putFile(MultipartFile file, String comment) {
@@ -58,7 +62,7 @@ public class FileService {
         return fileRepository.save(fileDB);
     }
 
-    public FileModel getFileByID(String id) {
+    public FileModel downloadFileById(String id) {
         return fileRepository.findById(id).get();
     }
 
@@ -69,7 +73,6 @@ public class FileService {
 
     public Stream<FileModel> getAllFilesInStorage() {
         return fileRepository.findAll().stream();
-    }
 
     public Stream<FileModel> getFilteredFilesInStorage(String name) {
         return fileRepository.findByName(name).stream();
@@ -99,6 +102,11 @@ public class FileService {
         return ResponseEntity.ok().body(files);
     }
 
+    public ResponseEntity<List<FileDTO>> doSmtng() {
+        List<FileDTO> dtos = fileRepository.findAll().stream().map(fileModel -> mapper.map(fileModel, FileDTO.class)).collect(Collectors.toList());
+        return ResponseEntity.ok().body(dtos);
+    }
+
     public ResponseEntity<?> deleteFileByID(String id) {
         try {
             fileRepository.deleteById(id);
@@ -124,7 +132,7 @@ public class FileService {
                     fileModel.getDate(),
                     fileModel.getComment(),
                     fileModel.getUpdatedDate()
-        );
+            );
         }).collect(Collectors.toList());
         return ResponseEntity.ok().body(files);
     }
