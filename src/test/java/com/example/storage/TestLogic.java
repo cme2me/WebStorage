@@ -97,6 +97,7 @@ public class TestLogic {
         Assertions.assertNotNull(createdModel);
         System.out.println(createdModel);
 
+
     }
 
 }
