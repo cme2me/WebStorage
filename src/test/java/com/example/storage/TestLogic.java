@@ -96,6 +96,7 @@ public class TestLogic {
         when(repository.save(any(FileModel.class))).thenReturn(fileModel);
         Assertions.assertNotNull(createdModel);
         System.out.println(createdModel);
+
     }
 
 }
