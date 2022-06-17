@@ -10,7 +10,5 @@ import java.util.UUID;
 
 @Repository
 public interface FileRepository extends JpaRepository<FileModel, UUID>, JpaSpecificationExecutor<FileModel> /*todo сделать спеку на фильтр*/, FileCustomRepository {
-
     List<FileModel> findByName(String name);
-
 }
