@@ -1,7 +1,6 @@
 package com.example.storage.service;
 
 import com.example.storage.dto.FileDTO;
-import com.example.storage.dto.FilesName;
 import com.example.storage.dto.ResponseMessage;
 import com.example.storage.model.FileModel;
 import com.example.storage.repository.FileRepository;
@@ -17,6 +16,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -33,40 +33,46 @@ public class FileService {
     }
 
     public ResponseEntity<ResponseMessage> putFile(MultipartFile file, String comment) {
-        if (!file.isEmpty()) {
-            try {
-                String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-                LocalDateTime date = LocalDateTime.now();
-                FileModel fileModel = new FileModel(fileName, file.getContentType(), file.getBytes(), date, date, comment);
-                fileRepository.save(fileModel);
-                return ResponseEntity.ok().body(new ResponseMessage("File uploaded"));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        if (file.isEmpty()) {
+            //todo кидать ошибку, а badRequest отлавливать в handler | done
+            throw new RuntimeException();
         }
+        try {
+            String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename())/*todo check for null | done?*/);
+            LocalDateTime date = LocalDateTime.now();
+            FileModel fileModel = new FileModel(fileName, file.getContentType(), file.getBytes(), date, date, comment);
+            fileRepository.save(fileModel);
+            return ResponseEntity.ok().body(new ResponseMessage("File uploaded"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //todo все ResponseEntity в контроллеры
         return ResponseEntity.badRequest().body(new ResponseMessage("Missing uploading file"));
     }
 
-    public FileModel updateFile(FileDTO fileDTO, String id) {
-        FileModel fileDB = fileRepository.findById(id).get();
-        if (Objects.nonNull(fileDTO.getFileName()) && !"".equalsIgnoreCase(fileDTO.getFileName())) {
+    public void updateFile(FileDTO fileDTO, String id) {
+        //todo .orElseThrow() | done
+        FileModel fileDB = fileRepository.findById(UUID.fromString(id)).orElseThrow();
+
+        if (StringUtils.hasLength(fileDTO.getFileName())) {
             fileDB.setName(fileDTO.getFileName());
         }
-        if (Objects.nonNull(fileDTO.getComment())) {
+        if (StringUtils.hasLength(fileDTO.getComment())) {
             fileDB.setComment(fileDTO.getComment());
         }
         if (Objects.nonNull(fileDTO.getChangeDate())) {
             fileDB.setUpdatedDate(fileDTO.getChangeDate());
         }
-        return fileRepository.save(fileDB);
+        fileRepository.save(fileDB);
     }
 
     public FileModel downloadFileById(String id) {
-        return fileRepository.findById(id).get();
+        return fileRepository.findById(UUID.fromString(id)).orElseThrow();
     }
 
-    public ResponseEntity<List<FilesName>> getFilesName() {
-        List<FilesName> filesName = getAllFilesInStorage().map(fileModel -> new FilesName(fileModel.getName())).collect(Collectors.toList());
+    public ResponseEntity<List<String>> getFilesName() {
+        //todo сделать запросом в базу через @Query в репозитории
+        List<String> filesName = getAllFilesInStorage().map(FileModel::getName).collect(Collectors.toList());
         return ResponseEntity.ok().body(filesName);
     }
 
@@ -82,78 +88,54 @@ public class FileService {
         return fileRepository.findByFromDateAndToDate(from, to).stream();
     }
 
-    public ResponseEntity<List<FileDTO>> showAllFiles() {
-        List<FileDTO> files = getAllFilesInStorage().map(fileModel -> {
-            String fileDownloadURL = ServletUriComponentsBuilder.fromCurrentContextPath()
-                    .path("/download/")
-                    .path(fileModel.getId())
-                    .toUriString();
-            return new FileDTO(
-                    fileModel.getId(),
-                    fileModel.getName(),
-                    fileDownloadURL,
-                    (long) fileModel.getData().length,
-                    fileModel.getFormat(),
-                    fileModel.getDate(),
-                    fileModel.getComment(),
-                    fileModel.getUpdatedDate()
-            );
-        }).collect(Collectors.toList());
-        return ResponseEntity.ok().body(files);
-    }
 
     public ResponseEntity<List<FileDTO>> doSmtng() {
         List<FileDTO> dtos = fileRepository.findAll().stream().map(fileModel -> mapper.map(fileModel, FileDTO.class)).collect(Collectors.toList());
         return ResponseEntity.ok().body(dtos);
     }
 
-    public ResponseEntity<?> deleteFileByID(String id) {
-        try {
-            fileRepository.deleteById(id);
-            return ResponseEntity.ok().body(new ResponseMessage("File deleted"));
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException();
+    //TODO проверка exists и кидать ошибку, отлавливая в handler | вроде сделал
+    public ResponseEntity<?> deleteFileByID(UUID id) {
+        if (!fileRepository.existsById(id)) {
+            try {
+                throw new IllegalArgumentException();
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            }
         }
+        fileRepository.deleteById(id);
+        return ResponseEntity.ok().body(new ResponseMessage("File deleted"));
     }
 
     public ResponseEntity<List<FileDTO>> findFilesByName(String name) {
-        List<FileDTO> files = getFilteredFilesInStorage(name).map(fileModel -> {
-            String fileDownloadURL = ServletUriComponentsBuilder.fromCurrentContextPath()
-                    .path("/download/")
-                    .path(fileModel.getId())
-                    .toUriString();
-            return new FileDTO(
-                    fileModel.getId(),
-                    fileModel.getName(),
-                    fileDownloadURL,
-                    (long) fileModel.getData().length,
-                    fileModel.getFormat(),
-                    fileModel.getDate(),
-                    fileModel.getComment(),
-                    fileModel.getUpdatedDate()
-            );
-        }).collect(Collectors.toList());
+        List<FileDTO> files = getFilteredFilesInStorage(name).map(this::getFileDTO).collect(Collectors.toList());
         return ResponseEntity.ok().body(files);
     }
 
     public ResponseEntity<List<FileDTO>> findFilesByDates(LocalDateTime from, LocalDateTime to) {
-        List<FileDTO> files = getFilteredFilesInStorageByDate(from, to).map(fileModel -> {
-            String fileDownloadURL = ServletUriComponentsBuilder.fromCurrentContextPath()
-                    .path("/download/")
-                    .path(fileModel.getId())
-                    .toUriString();
-            return new FileDTO(
-                    fileModel.getId(),
-                    fileModel.getName(),
-                    fileDownloadURL,
-                    (long) fileModel.getData().length,
-                    fileModel.getFormat(),
-                    fileModel.getDate(),
-                    fileModel.getComment(),
-                    fileModel.getUpdatedDate()
-            );
-        }).collect(Collectors.toList());
+        List<FileDTO> files = getFilteredFilesInStorageByDate(from, to).map(this::getFileDTO).collect(Collectors.toList());
         return ResponseEntity.ok().body(files);
+    }
+
+    public ResponseEntity<List<FileDTO>> showAllFiles() {
+        List<FileDTO> files = getAllFilesInStorage().map(this::getFileDTO).collect(Collectors.toList());
+        return ResponseEntity.ok().body(files);
+    }
+
+    private FileDTO getFileDTO(FileModel fileModel) {
+        String fileDownloadURL = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/download/")
+                .path(String.valueOf(fileModel.getId()))
+                .toUriString();
+        return new FileDTO(
+                fileModel.getId(),
+                fileModel.getName(),
+                fileDownloadURL,
+                fileModel.getData().length,
+                fileModel.getFormat(),
+                fileModel.getDate(),
+                fileModel.getUpdatedDate(),
+                fileModel.getComment()
+        );
     }
 }
