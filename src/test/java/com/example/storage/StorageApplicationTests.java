@@ -14,7 +14,7 @@ import java.io.IOException;
 class StorageApplicationTests {
 
     @Autowired
-    private TestLogic testLogic;
+    private TestRepositoryMethods testRepositoryMethods;
 
     /*@Test
     @DisplayName("Test save method")
@@ -31,12 +31,12 @@ class StorageApplicationTests {
     @Test
     @DisplayName("Test get all files")
     public void findAllFiles() throws IOException {
-        testLogic.testFindAll();
+        testRepositoryMethods.testFindAll();
     }
 
     @Test
     @DisplayName("Test save repo method")
     public void testCreateFile() throws IOException {
-        testLogic.createFile();
+        testRepositoryMethods.createFile();
     }
 }

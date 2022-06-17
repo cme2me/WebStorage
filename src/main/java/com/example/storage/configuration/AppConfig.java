@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class AppConfig {
-    @Bean
+/*    @Bean
     public FileModel fileModel() {
         return new FileModel();
     }
@@ -16,7 +16,7 @@ public class AppConfig {
     @Bean
     public FileDTO fileDTO() {
         return new FileDTO();
-    }
+    }*/
 
     @Bean
     public ModelMapper modelMapper() {

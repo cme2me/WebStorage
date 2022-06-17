@@ -16,12 +16,13 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @Component
-public class TestLogic {
+public class TestRepositoryMethods {
     @InjectMocks
     @Autowired
     private FileService service;
@@ -65,7 +66,7 @@ public class TestLogic {
         init();
         byte[] fileBytes = Files.readAllBytes(Paths.get("src/test/resources/1.txt"));
         FileModel createdModel = new FileModel();
-        createdModel.setId("123442");
+        createdModel.setId(UUID.fromString("123442"));
         createdModel.setDate(LocalDateTime.now());
         createdModel.setComment("testComment");
         createdModel.setName("testFileName");
@@ -85,7 +86,7 @@ public class TestLogic {
         init();
         byte[] fileBytes = Files.readAllBytes(Paths.get("src/test/resources/1.txt"));
         FileModel createdModel = new FileModel();
-        createdModel.setId("123442");
+        createdModel.setId(UUID.fromString("123442"));
         createdModel.setDate(LocalDateTime.now());
         createdModel.setComment("testComment");
         createdModel.setName("testFileName");
@@ -96,6 +97,8 @@ public class TestLogic {
         when(repository.save(any(FileModel.class))).thenReturn(fileModel);
         Assertions.assertNotNull(createdModel);
         System.out.println(createdModel);
+
+
     }
 
 }

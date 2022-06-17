@@ -10,6 +10,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "storage_files")
@@ -21,16 +22,21 @@ public class FileModel {
     @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
-    private String id;
+    //todo сделать тип UUID |
+    private UUID id;
     private String name;
     private String format;
     @Lob
     private byte[] data;
     @CreationTimestamp
     private LocalDateTime date;
+    //todo проверить автогенерацию дат
     @UpdateTimestamp
     private LocalDateTime updatedDate;
     private String comment;
+
+    /*@OneToOne
+    private SeconModel seconModel;*/
 
     public FileModel(String name, String format, byte[] data, LocalDateTime date, LocalDateTime updatedDate, String comment) {
         this.name = name;

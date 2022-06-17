@@ -1,6 +1,7 @@
 package com.example.storage.exceptions;
 
 import com.example.storage.dto.ResponseMessage;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -12,16 +13,23 @@ public class FileExceptionHandler {
 
     @ExceptionHandler(MultipartException.class)
     public ResponseEntity<ResponseMessage> uploadException(Throwable t) {
-        return ResponseEntity.internalServerError().body(new ResponseMessage("Файл не был загружен, " + t.getMessage()));
+        return ResponseEntity.badRequest().body(new ResponseMessage("Файл не был загружен, " + t.getMessage()));
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ResponseMessage> runTimeException(Throwable t) {
-        return ResponseEntity.badRequest().body(new ResponseMessage("RuntimeException | ERROR: " + t.getMessage()));
+    @ExceptionHandler(EmptyResultDataAccessException.class)
+    public ResponseEntity<ResponseMessage> noSuchIdException() {
+        return ResponseEntity.badRequest().body(new ResponseMessage("Отсутствует файл с таким Id"));
+    }
+
+    //todo Exception.class
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ResponseMessage> Exception(Throwable t) {
+        return ResponseEntity.internalServerError().body(new ResponseMessage("Server | ERROR: " + t.getMessage()));
     }
 
     @ExceptionHandler(MissingServletRequestPartException.class)
     public ResponseEntity<ResponseMessage> missingUploadPartsException(Throwable t) {
         return ResponseEntity.badRequest().body(new ResponseMessage(t.getMessage()));
     }
+
 }
