@@ -74,7 +74,6 @@ public class FileService {
         return fileRepository.findAllNames();
     }
 
-
     //TODO проверка exists и кидать ошибку, отлавливая в handler | +?
     public void deleteFileByID(UUID id) {
         if (!fileRepository.existsById(id)) {
