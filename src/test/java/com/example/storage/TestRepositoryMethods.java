@@ -1,12 +1,14 @@
 package com.example.storage;
 
+import com.example.storage.mapper.EntityMapper;
+import com.example.storage.mapper.MapperImpl;
 import com.example.storage.model.FileModel;
 import com.example.storage.repository.FileRepository;
+import com.example.storage.repository.RepositorySpec;
 import com.example.storage.service.FileService;
 import org.junit.jupiter.api.Assertions;
 import org.mockito.InjectMocks;
 import org.mockito.Mockito;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -28,11 +30,12 @@ public class TestRepositoryMethods {
     private FileService service;
     private FileModel fileModel;
     private FileRepository repository = Mockito.mock(FileRepository.class);
-    private ModelMapper mapper;
     private ModelBuilder builder;
+    private RepositorySpec specification;
+    private MapperImpl mapper;
 
     public void init() {
-        service = new FileService(this.repository, this.mapper);
+        service = new FileService(this.repository, this.specification, this.mapper);
     }
 
     /* public void testFileSave() throws IOException {

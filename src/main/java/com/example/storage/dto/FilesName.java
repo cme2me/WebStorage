@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-//todo обект FilesName из контроллеров будет возвращаться один
+//todo обект FilesName из контроллеров будет возвращаться один | +?
 public class FilesName {
     //todo сделать List<String> | Done
     private List<String> filename;
