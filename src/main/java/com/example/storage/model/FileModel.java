@@ -22,7 +22,7 @@ public class FileModel {
     @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
-    //todo сделать тип UUID |
+    //todo сделать тип UUID | +
     private UUID id;
     private String name;
     private String format;
@@ -30,7 +30,7 @@ public class FileModel {
     private byte[] data;
     @CreationTimestamp
     private LocalDateTime date;
-    //todo проверить автогенерацию дат
+    //todo проверить автогенерацию дат | +
     @UpdateTimestamp
     private LocalDateTime updatedDate;
     private String comment;
@@ -38,12 +38,10 @@ public class FileModel {
     /*@OneToOne
     private SeconModel seconModel;*/
 
-    public FileModel(String name, String format, byte[] data, LocalDateTime date, LocalDateTime updatedDate, String comment) {
+    public FileModel(String name, String format, byte[] data, String comment) {
         this.name = name;
-        this.updatedDate = updatedDate;
         this.format = format;
         this.data = data;
-        this.date = date;
         this.comment = comment;
     }
 }

@@ -24,5 +24,5 @@ public class SeconModel {
 
     @OneToOne
     private FileModel fileModel;
-    //todo понять как происходит бесконечная рекурсия при связи двух сущностей из-за toString() || ???
+    //todo понять почему stackoverflow || бесконечная рекурсия при вызове метода toString()???
 }*/

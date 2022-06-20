@@ -18,7 +18,7 @@ public class FileExceptionHandler {
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
     public ResponseEntity<ResponseMessage> noSuchIdException() {
-        return ResponseEntity.badRequest().body(new ResponseMessage("Отсутствует файл с таким Id"));
+        return ResponseEntity.badRequest().body(new ResponseMessage("File id doesn't exist!"));
     }
 
     //todo Exception.class

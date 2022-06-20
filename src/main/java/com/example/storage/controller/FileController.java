@@ -7,6 +7,8 @@ import com.example.storage.service.FileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,19 +35,20 @@ public class FileController {
     @Operation(summary = "Загрузка файла", description = "Необходимо выбрать файл и указать к нему комментарий")
     @PostMapping("/upload")
     public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("file") MultipartFile file, @RequestParam String comment) throws MultipartException {
-        return fileService.putFile(file, comment);
+        fileService.putFile(file, comment);
+        return ResponseEntity.ok().body(new ResponseMessage("File uploaded"));
     }
 
     @Operation(summary = "Возврат списка названий файлов", description = "Возвращает названия файлов")
     @GetMapping("/files/names")
     public ResponseEntity<List<String>> getFileName() {
-        return fileService.getFilesName();
+        return ResponseEntity.ok().body(fileService.getFilesName());
     }
 
     @Operation(summary = "Возврат списка данных о файлах", description = "Возвращает данные о файлах")
     @GetMapping("/files")
-    public ResponseEntity<List<FileDTO>> getAllInformationAboutFiles() {
-        return fileService.showAllFiles();
+    public ResponseEntity<List<?>> getAllInformationAboutFiles() {
+        return ResponseEntity.ok().body(fileService.showAllFiles());
     }
 
     @Operation(summary = "Скачивания файла", description = "Метод возвращает ссылку на скачивание файла, необходимо указать id файла, который хотите скачать")
@@ -62,36 +65,31 @@ public class FileController {
 
     @Operation(summary = "Удаление файла", description = "Чтобы удалить файл, нужно указать его id")
     @PostMapping("/file/delete/{id}")
-    public ResponseEntity<?> deleteFileByID(@PathVariable UUID id) {
-        return fileService.deleteFileByID(id);
+    public ResponseEntity<ResponseMessage> deleteFileByID(@PathVariable UUID id) {
+        fileService.deleteFileByID(id);
+        return ResponseEntity.ok().body(new ResponseMessage("File deleted"));
     }
 
     @Operation(summary = "Обновление/переименование файла", description = "Для обновления файла нужно указать его id и имя, на которое хотите переименовать")
     @PutMapping("/file/update/{id}")
     public ResponseEntity<ResponseMessage> updateFileByID(@RequestBody FileDTO fileDTO, @PathVariable("id") String id) {
         fileService.updateFile(fileDTO, id);
-        return ResponseEntity.ok().body(new ResponseMessage("Файл обновлен " + fileDTO.getFileName()));
+        return ResponseEntity.ok().body(new ResponseMessage("Файл обновлен " + fileDTO.getName()));
     }
 
-    @Operation(summary = "Тестовое", description = "Тест")
-    @GetMapping("/new/test")
-    public ResponseEntity<List<FileDTO>> test() {
-        return fileService.doSmtng();
-    }
     //todo сделать пагинацию для метода фильтрации
-    @Operation(summary = "Фильтрация файлов по их имени", description = "Возвращает список файлов, имя которых совпадает с указанным")
+    @Operation(summary = "Фильтрация файлов", description = "Возвращает список файлов, поля которых, совпадают с параметрами фильтрации")
     @Transactional
-    @GetMapping("/files/{name}")
-    public ResponseEntity<List<FileDTO>> findFilesByName(@PathVariable("name") String name) {
-        return fileService.findFilesByName(name);
-    }
+    @GetMapping("/files/filter")
+    public ResponseEntity<Page<FileModel>> findFilesByName(
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "format", required = false) String format,
+            @RequestParam(value = "from", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
+            @RequestParam(value = "to", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to) {
 
-    @Operation(summary = "Фильтрация файлов по дате", description = "Возвращает список файлов, даты которых находятся между указанных")
-    @Transactional
-    @GetMapping("/files/date/{from}/{to}")
-    public ResponseEntity<List<FileDTO>> findFilesByDate(@PathVariable("from") String from,
-                                                         @PathVariable("to") String to) {
-        return fileService.findFilesByDates(LocalDateTime.parse(from), LocalDateTime.parse(to));
+        return ResponseEntity.ok().body(fileService.findFilteredFiles(name, format, from, to));
     }
 
     //todo один эндпоинт на все параметры фильтра /get?from=&to&name=&...
