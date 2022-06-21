@@ -88,7 +88,6 @@ public class FileController {
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
             @RequestParam(value = "to", required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to) {
-
         return ResponseEntity.ok().body(fileService.findFilteredFiles(name, format, from, to));
     }
 

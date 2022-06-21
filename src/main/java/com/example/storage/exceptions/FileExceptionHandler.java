@@ -16,11 +16,6 @@ public class FileExceptionHandler {
         return ResponseEntity.badRequest().body(new ResponseMessage("Файл не был загружен, " + t.getMessage()));
     }
 
-    @ExceptionHandler(EmptyResultDataAccessException.class)
-    public ResponseEntity<ResponseMessage> noSuchIdException() {
-        return ResponseEntity.badRequest().body(new ResponseMessage("File id doesn't exist!"));
-    }
-
     //todo Exception.class
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ResponseMessage> Exception(Throwable t) {
@@ -30,6 +25,11 @@ public class FileExceptionHandler {
     @ExceptionHandler(MissingServletRequestPartException.class)
     public ResponseEntity<ResponseMessage> missingUploadPartsException(Throwable t) {
         return ResponseEntity.badRequest().body(new ResponseMessage(t.getMessage()));
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ResponseMessage> noSuchIdException() {
+        return ResponseEntity.badRequest().body(new ResponseMessage("File id doesn't exist!"));
     }
 
 }

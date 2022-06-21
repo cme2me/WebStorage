@@ -1,7 +1,6 @@
 package com.example.storage;
 
 import com.example.storage.mapper.EntityMapper;
-import com.example.storage.mapper.MapperImpl;
 import com.example.storage.model.FileModel;
 import com.example.storage.repository.FileRepository;
 import com.example.storage.repository.RepositorySpec;
@@ -32,7 +31,7 @@ public class TestRepositoryMethods {
     private FileRepository repository = Mockito.mock(FileRepository.class);
     private ModelBuilder builder;
     private RepositorySpec specification;
-    private MapperImpl mapper;
+    private EntityMapper mapper;
 
     public void init() {
         service = new FileService(this.repository, this.specification, this.mapper);

@@ -14,10 +14,18 @@ public class RepositorySpec {
     public Specification<FileModel> nameAndFormatAndDates(String name, String format, LocalDateTime from, LocalDateTime to) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
-            predicates.add(criteriaBuilder.like(root.get("name"), "%" + name + "%"));
-            predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("date"), from));
-            predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("date"), to));
-            predicates.add(criteriaBuilder.equal(root.get("format"), format));
+            if (name != null) {
+                predicates.add(criteriaBuilder.like(root.get("name"), "%" + name + "%"));
+            }
+            if (from != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("date"), from));
+            }
+            if (to != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("date"), to));
+            }
+            if (format != null) {
+                predicates.add(criteriaBuilder.equal(root.get("format"), format));
+            }
             return criteriaBuilder.and(predicates.toArray(new Predicate[]{}));
         };
     }
