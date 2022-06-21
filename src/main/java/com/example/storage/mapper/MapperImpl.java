@@ -1,4 +1,4 @@
-package com.example.storage.mapper;
+/*package com.example.storage.mapper;
 
 import com.example.storage.dto.FileDTO;
 import com.example.storage.model.FileModel;
@@ -49,4 +49,4 @@ public class MapperImpl implements EntityMapper {
         }
         return fileDTOList;
     }
-}
+}*/

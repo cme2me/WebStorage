@@ -77,14 +77,13 @@ public class FileController {
     @Operation(summary = "Фильтрация файлов", description = "Возвращает список файлов, поля которых, совпадают с параметрами фильтрации")
     @Transactional
     @GetMapping("/files/filter")
-    public ResponseEntity<Page<FileModel>> findFilesByName(
+    public ResponseEntity<Page<FileDTO>> findFilesByName(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "format", required = false) String format,
             @RequestParam(value = "from", required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
             @RequestParam(value = "to", required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to) {
-
         return ResponseEntity.ok().body(fileService.findFilteredFiles(name, format, from, to));
     }
 

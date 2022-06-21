@@ -1,11 +1,10 @@
 package com.example.storage.service;
 
 import com.example.storage.dto.FileDTO;
-import com.example.storage.mapper.MapperImpl;
+import com.example.storage.mapper.EntityMapper;
 import com.example.storage.model.FileModel;
 import com.example.storage.repository.FileRepository;
 import com.example.storage.repository.RepositorySpec;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,17 +17,17 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-@Slf4j
+
 @Service
 //todo логер, info methods, debug
 public class FileService {
 
     private final FileRepository fileRepository;
     private final RepositorySpec specification;
-    private final MapperImpl mapper;
+    private final EntityMapper mapper;
 
     @Autowired
-    public FileService(FileRepository fileRepository, RepositorySpec specification, MapperImpl mapper) {
+    public FileService(FileRepository fileRepository, RepositorySpec specification, EntityMapper mapper) {
         this.fileRepository = fileRepository;
         this.specification = specification;
         this.mapper = mapper;
@@ -78,17 +77,12 @@ public class FileService {
     //TODO проверка exists и кидать ошибку, отлавливая в handler | +?
     public void deleteFileByID(UUID id) {
         if (!fileRepository.existsById(id)) {
-            try {
-                throw new IllegalArgumentException();
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            }
+            throw new IllegalArgumentException();
         }
         fileRepository.deleteById(id);
-        //todo try/catch
     }
 
-    public Page<FileModel> findFilteredFiles(String name, String format, LocalDateTime from, LocalDateTime to) {
+    public Page<FileDTO> findFilteredFiles(String name, String format, LocalDateTime from, LocalDateTime to) {
         Page<FileModel> all = fileRepository.findAll(specification.nameAndFormatAndDates(name, format, from, to), PageRequest.of(0, 2));
 
         return all;
