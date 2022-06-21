@@ -82,7 +82,7 @@ public class FileService {
         fileRepository.deleteById(id);
     }
 
-    public Page<FileDTO> findFilteredFiles(String name, String format, LocalDateTime from, LocalDateTime to) {
+    public Page<FileModel> findFilteredFiles(String name, String format, LocalDateTime from, LocalDateTime to) {
         Page<FileModel> all = fileRepository.findAll(specification.nameAndFormatAndDates(name, format, from, to), PageRequest.of(0, 2));
 
         return all;

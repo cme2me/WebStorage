@@ -10,13 +10,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.List;
+import java.util.UUID;
 
 @Component
 @Mapper(componentModel = "spring")
 //todo сделать mapper
 public interface EntityMapper {
     @Mapping(target = "size", expression = "java( fileModel.getData().length )")
-    @Mapping(target = "downloadURL", expression = "java( createDownloadURL(fileModel) )")
+    @Mapping(target = "downloadURL", qualifiedByName = "createDownloadURL", source = "fileModel")
     FileDTO toFileDTO(FileModel fileModel);
 
     FileModel toEntity(FileDTO fileDTO);
@@ -27,7 +28,7 @@ public interface EntityMapper {
     default String createDownloadURL(FileModel fileModel) {
         return ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/download/")
-                .path(String.valueOf(fileModel.getId()))
+                .path(fileModel.getId().toString())
                 .toUriString();
     }
 }
