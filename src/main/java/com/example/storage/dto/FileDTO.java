@@ -1,34 +1,25 @@
 package com.example.storage.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class FileDTO {
-    private String id;
-    private String fileName;
+    private UUID id;
+    private String name;
     private String downloadURL;
-    private Long size;
-    private String fileFormat;
-    private LocalDateTime uploadDate;
-    private LocalDateTime changeDate;
+    private int size;
+    private String format;
+    private LocalDateTime date;
+    private LocalDateTime updatedDate;
     private String comment;
 
-    public FileDTO(String id, String fileName, String downloadURL, Long size, String fileFormat, LocalDateTime uploadDate, String comment, LocalDateTime changeDate) {
-        this.id = id;
-        this.fileName = fileName;
-        this.downloadURL = downloadURL;
-        this.size = size;
-        this.fileFormat = fileFormat;
-        this.uploadDate = uploadDate;
-        this.comment = comment;
-        this.changeDate = changeDate;
-    }
+    //todo lombok | done
+
 }

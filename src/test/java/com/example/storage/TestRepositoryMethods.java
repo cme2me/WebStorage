@@ -1,12 +1,13 @@
 package com.example.storage;
 
+import com.example.storage.mapper.EntityMapper;
 import com.example.storage.model.FileModel;
 import com.example.storage.repository.FileRepository;
+import com.example.storage.repository.RepositorySpec;
 import com.example.storage.service.FileService;
 import org.junit.jupiter.api.Assertions;
 import org.mockito.InjectMocks;
 import org.mockito.Mockito;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,22 +17,24 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @Component
-public class TestLogic {
+public class TestRepositoryMethods {
     @InjectMocks
     @Autowired
     private FileService service;
     private FileModel fileModel;
     private FileRepository repository = Mockito.mock(FileRepository.class);
-    private ModelMapper mapper;
     private ModelBuilder builder;
+    private RepositorySpec specification;
+    private EntityMapper mapper;
 
     public void init() {
-        service = new FileService(this.repository, this.mapper);
+        service = new FileService(this.repository, this.specification, this.mapper);
     }
 
     /* public void testFileSave() throws IOException {
@@ -65,7 +68,7 @@ public class TestLogic {
         init();
         byte[] fileBytes = Files.readAllBytes(Paths.get("src/test/resources/1.txt"));
         FileModel createdModel = new FileModel();
-        createdModel.setId("123442");
+        createdModel.setId(UUID.fromString("123442"));
         createdModel.setDate(LocalDateTime.now());
         createdModel.setComment("testComment");
         createdModel.setName("testFileName");
@@ -85,7 +88,7 @@ public class TestLogic {
         init();
         byte[] fileBytes = Files.readAllBytes(Paths.get("src/test/resources/1.txt"));
         FileModel createdModel = new FileModel();
-        createdModel.setId("123442");
+        createdModel.setId(UUID.fromString("123442"));
         createdModel.setDate(LocalDateTime.now());
         createdModel.setComment("testComment");
         createdModel.setName("testFileName");

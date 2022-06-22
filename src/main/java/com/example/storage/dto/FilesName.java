@@ -4,9 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+//todo обект FilesName из контроллеров будет возвращаться один | +?
 public class FilesName {
-    private String filename;
+    //todo сделать List<String> | Done
+    private List<String> filename;
 }
