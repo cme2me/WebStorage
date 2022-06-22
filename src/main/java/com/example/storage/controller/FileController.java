@@ -1,6 +1,7 @@
 package com.example.storage.controller;
 
 import com.example.storage.dto.FileDTO;
+import com.example.storage.dto.PageDTO;
 import com.example.storage.dto.ResponseMessage;
 import com.example.storage.model.FileModel;
 import com.example.storage.service.FileService;
@@ -77,7 +78,7 @@ public class FileController {
     @Operation(summary = "Фильтрация файлов", description = "Возвращает список файлов, поля которых, совпадают с параметрами фильтрации")
     @Transactional
     @GetMapping("/files/filter")
-    public ResponseEntity<Page<FileModel>> findFilesByName(
+    public ResponseEntity<PageDTO<FileDTO>> findFilesByName(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "format", required = false) String format,
             @RequestParam(value = "from", required = false)

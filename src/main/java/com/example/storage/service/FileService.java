@@ -1,13 +1,16 @@
 package com.example.storage.service;
 
 import com.example.storage.dto.FileDTO;
+import com.example.storage.dto.PageDTO;
 import com.example.storage.mapper.EntityMapper;
 import com.example.storage.model.FileModel;
 import com.example.storage.repository.FileRepository;
 import com.example.storage.repository.RepositorySpec;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,7 +30,7 @@ public class FileService {
     private final EntityMapper mapper;
 
     @Autowired
-    public FileService(FileRepository fileRepository, RepositorySpec specification, EntityMapper mapper) {
+    public FileService(FileRepository fileRepository, RepositorySpec specification, @Qualifier("entityMapperImpl") EntityMapper mapper) {
         this.fileRepository = fileRepository;
         this.specification = specification;
         this.mapper = mapper;
@@ -82,10 +85,10 @@ public class FileService {
         fileRepository.deleteById(id);
     }
 
-    public Page<FileModel> findFilteredFiles(String name, String format, LocalDateTime from, LocalDateTime to) {
-        Page<FileModel> all = fileRepository.findAll(specification.nameAndFormatAndDates(name, format, from, to), PageRequest.of(0, 2));
-
-        return all;
+    public PageDTO<FileDTO> findFilteredFiles(String name, String format, LocalDateTime from, LocalDateTime to) {
+        Page<FileModel> fileModelPage = fileRepository.findAll(specification.nameAndFormatAndDates(name, format, from, to), PageRequest.of(0, 2));
+        PageDTO<FileDTO> fileDTOSPage = mapper.toPageDTO(fileModelPage);
+        return fileDTOSPage;
         //todo сделать PageDTO, 3 параметра PageRequest, замаппить
     }
 
