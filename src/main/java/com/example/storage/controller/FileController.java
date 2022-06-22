@@ -8,7 +8,6 @@ import com.example.storage.service.FileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -74,7 +73,7 @@ public class FileController {
         return ResponseEntity.ok().body(new ResponseMessage("Файл обновлен " + fileDTO.getName()));
     }
 
-    //todo сделать пагинацию для метода фильтрации
+    //todo сделать пагинацию для метода фильтрации | +-
     @Operation(summary = "Фильтрация файлов", description = "Возвращает список файлов, поля которых, совпадают с параметрами фильтрации")
     @Transactional
     @GetMapping("/files/filter")
@@ -85,8 +84,10 @@ public class FileController {
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
             @RequestParam(value = "to", required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to) {
-        return ResponseEntity.ok().body(fileService.findFilteredFiles(name, format, from, to));
+        RequestParams requestParams = new RequestParams(name, format, from, to);
+        return ResponseEntity.ok().body(fileService.findFilteredFiles(requestParams.getName(),
+                requestParams.getFormat(),requestParams.getFrom(), requestParams.getTo()));
     }
 
-    //todo один эндпоинт на все параметры фильтра /get?from=&to&name=&...
+    //todo один эндпоинт на все параметры фильтра /get?from=&to&name=&... | ++
 }

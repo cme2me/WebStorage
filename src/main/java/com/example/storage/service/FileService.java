@@ -1,5 +1,6 @@
 package com.example.storage.service;
 
+import com.example.storage.controller.RequestParams;
 import com.example.storage.dto.FileDTO;
 import com.example.storage.dto.PageDTO;
 import com.example.storage.mapper.EntityMapper;
@@ -10,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -81,8 +81,7 @@ public class FileService {
     public void deleteFileByID(UUID id) {
         if (fileRepository.existsById(id)) {
             fileRepository.deleteById(id);
-        }
-        else throw new IllegalArgumentException();
+        } else throw new IllegalArgumentException();
     }
 
     public PageDTO<FileDTO> findFilteredFiles(String name, String format, LocalDateTime from, LocalDateTime to) {
