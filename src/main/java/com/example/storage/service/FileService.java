@@ -79,17 +79,16 @@ public class FileService {
 
     //TODO проверка exists и кидать ошибку, отлавливая в handler | +?
     public void deleteFileByID(UUID id) {
-        if (!fileRepository.existsById(id)) {
-            throw new IllegalArgumentException();
+        if (fileRepository.existsById(id)) {
+            fileRepository.deleteById(id);
         }
-        fileRepository.deleteById(id);
+        else throw new IllegalArgumentException();
     }
 
     public PageDTO<FileDTO> findFilteredFiles(String name, String format, LocalDateTime from, LocalDateTime to) {
         Page<FileModel> fileModelPage = fileRepository.findAll(specification.nameAndFormatAndDates(name, format, from, to), PageRequest.of(0, 2));
-        PageDTO<FileDTO> fileDTOSPage = mapper.toPageDTO(fileModelPage);
-        return fileDTOSPage;
-        //todo сделать PageDTO, 3 параметра PageRequest, замаппить
+        return mapper.toPageDTO(fileModelPage);
+        //todo сделать PageDTO, 3 параметра PageRequest, замаппить | +-
     }
 
     public List<FileDTO> showAllFiles() {
