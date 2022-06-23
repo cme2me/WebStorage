@@ -10,7 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 //todo обект FilesName из контроллеров будет возвращаться один | +?
-public class FilesName {
+public class FilesNameDTO {
     //todo сделать List<String> | Done
     private List<String> filename;
 }

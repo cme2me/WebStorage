@@ -1,6 +1,7 @@
 package com.example.storage.exceptions;
 
 import com.example.storage.dto.ResponseMessage;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -9,6 +10,7 @@ import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 @ControllerAdvice
+@Slf4j
 public class FileExceptionHandler {
 
     @ExceptionHandler(MultipartException.class)
@@ -19,6 +21,7 @@ public class FileExceptionHandler {
     //todo Exception.class
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ResponseMessage> Exception(Throwable t) {
+        log.error(String.valueOf(t));
         return ResponseEntity.internalServerError().body(new ResponseMessage("Server | ERROR: " + t.getMessage()));
     }
 

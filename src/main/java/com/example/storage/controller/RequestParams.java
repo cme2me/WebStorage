@@ -14,4 +14,6 @@ public class RequestParams {
     private String format;
     private LocalDateTime from;
     private LocalDateTime to;
+    private Integer page;
+    private Integer size;
 }

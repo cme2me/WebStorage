@@ -1,106 +1,123 @@
 package com.example.storage;
 
-import com.example.storage.mapper.EntityMapper;
+import com.example.storage.dto.FileDTO;
 import com.example.storage.model.FileModel;
 import com.example.storage.repository.FileRepository;
-import com.example.storage.repository.RepositorySpec;
 import com.example.storage.service.FileService;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
-import org.mockito.InjectMocks;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.*;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
 @Component
+@Slf4j
 public class TestRepositoryMethods {
-    @InjectMocks
-    @Autowired
-    private FileService service;
-    private FileModel fileModel;
-    private FileRepository repository = Mockito.mock(FileRepository.class);
-    private ModelBuilder builder;
-    private RepositorySpec specification;
-    private EntityMapper mapper;
 
-    public void init() {
-        service = new FileService(this.repository, this.specification, this.mapper);
+    private final FileRepository repository = Mockito.mock(FileRepository.class);
+    private final FileService service = Mockito.mock(FileService.class);
+    @Mock
+    private FileModel fileModel = new FileModel();
+    @Mock
+    private FileDTO fileDTO = new FileDTO();
+
+
+    public void testNotNullMockObjects() {
+        Assertions.assertNotNull(repository);
+        Assertions.assertNotNull(fileModel);
+        log.info("MockRepo and MockFileModel not null");
     }
 
-    /* public void testFileSave() throws IOException {
-        init();
-        byte[] fileBytes = Files.readAllBytes(Paths.get("src/test/resources/1.txt"));
-        FileModel modelToSave = FileModel.builder()
-                .id("123442")
-                .name("1.txt")
-                .comment("testFileComment")
-                .date(LocalDateTime.now())
-                .updatedDate(LocalDateTime.now())
-                .format("text/txt")
-                .data(fileBytes)
-                .build();
-        when(repository.save(any(FileModel.class))).thenReturn(modelToSave);
-        MultipartFile file = new MockMultipartFile("1.txt", "1.txt", "text/txt", fileBytes);
-        when(service.putFile(file, modelToSave.getComment())).thenReturn(new ResponseEntity<>(HttpStatus.CREATED));
-        Assertions.assertEquals("1.txt", modelToSave.getName());
-        Assertions.assertEquals("1.txt", file.getName());
-        Assertions.assertEquals(modelToSave.getFormat(), file.getContentType());
-        Assertions.assertEquals(modelToSave.getData(), file.getBytes());
-        Assertions.assertNotNull(modelToSave.getDate());
-        Assertions.assertNotNull(modelToSave.getUpdatedDate());
-        Assertions.assertNotNull(modelToSave.getComment());
-        Assertions.assertNotNull(modelToSave);
-        Assertions.assertNotNull(file);
-        System.out.println(modelToSave);
-    }*/
 
-    public void testFindAll() throws IOException {
-        init();
-        byte[] fileBytes = Files.readAllBytes(Paths.get("src/test/resources/1.txt"));
-        FileModel createdModel = new FileModel();
-        createdModel.setId(UUID.fromString("123442"));
-        createdModel.setDate(LocalDateTime.now());
-        createdModel.setComment("testComment");
-        createdModel.setName("testFileName");
-        createdModel.setUpdatedDate(LocalDateTime.now());
-        createdModel.setData(fileBytes);
-        createdModel.setFormat("text/txt");
-        List<FileModel> filesList = new ArrayList<>();
-        filesList.add(createdModel);
-
-        when(repository.findAll()).thenReturn(filesList);
-        Assertions.assertNotNull(filesList);
-        Assertions.assertEquals(filesList.get(0), createdModel);
-        System.out.println(filesList);
+    public void createTestFile() {
+        byte[] fileBytes = new byte[]{32, 4, 12, 66, 86, 34};
+        fileModel.setId(UUID.fromString("4644765f-38db-4baf-a8e9-ae4704a2d6cd"));
+        fileModel.setData(fileBytes);
+        fileModel.setFormat("text/txt");
+        fileModel.setComment("testComment");
+        fileModel.setUpdatedDate(LocalDateTime.now());
+        fileModel.setDate(LocalDateTime.now());
+        fileModel.setName("testName");
+        Assertions.assertNotNull(fileModel.getData());
+        Assertions.assertNotNull(fileModel.getId());
+        Assertions.assertNotNull(fileModel.getComment());
+        Assertions.assertNotNull(fileModel.getDate());
+        Assertions.assertNotNull(fileModel.getFormat());
+        Assertions.assertNotNull(fileModel.getUpdatedDate());
+        Assertions.assertNotNull(fileModel.getName());
     }
 
-    public void createFile() throws IOException {
-        init();
-        byte[] fileBytes = Files.readAllBytes(Paths.get("src/test/resources/1.txt"));
-        FileModel createdModel = new FileModel();
-        createdModel.setId(UUID.fromString("123442"));
-        createdModel.setDate(LocalDateTime.now());
-        createdModel.setComment("testComment");
-        createdModel.setName("testFileName");
-        createdModel.setUpdatedDate(LocalDateTime.now());
-        createdModel.setData(fileBytes);
-        createdModel.setFormat("text/txt");
-
-        when(repository.save(any(FileModel.class))).thenReturn(fileModel);
-        Assertions.assertNotNull(createdModel);
-        System.out.println(createdModel);
-
-
+    public void createFileDTO() {
+        createTestFile();
+        String downloadURL = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/download/")
+                .path(fileModel.getId().toString())
+                .toUriString();
+        fileDTO.setSize(fileModel.getData().length);
+        fileDTO.setFormat(fileModel.getFormat());
+        fileDTO.setComment(fileModel.getComment());
+        fileDTO.setId(fileModel.getId());
+        fileDTO.setName(fileModel.getName());
+        fileDTO.setDate(fileModel.getDate());
+        fileDTO.setUpdatedDate(fileModel.getUpdatedDate());
+        fileDTO.setDownloadURL(downloadURL);
+        Assertions.assertNotNull(fileDTO);
+        Assertions.assertNotNull(fileDTO.getName());
+        Assertions.assertNotNull(fileDTO.getDate());
+        Assertions.assertNotNull(fileDTO.getComment());
+        Assertions.assertNotNull(fileDTO.getUpdatedDate());
+        Assertions.assertNotNull(fileDTO.getId());
+        Assertions.assertNotNull(fileDTO.getFormat());
+        Assertions.assertNotNull(fileDTO.getDownloadURL());
+        Assertions.assertEquals(fileDTO.getName(), fileModel.getName());
+        Assertions.assertEquals(fileDTO.getFormat(), fileModel.getFormat());
+        Assertions.assertEquals(fileDTO.getSize(), fileModel.getData().length);
     }
 
+    public void testServiceSave() {
+        createTestFile();
+        service.putFile(new MockMultipartFile(fileModel.getName(), fileModel.getData()), fileModel.getComment());
+        Assertions.assertEquals("testName", fileModel.getName());
+        System.out.println(repository.save(fileModel));
+        log.info("File uploaded");
+    }
+
+    public void testServiceDelete() {
+        createTestFile();
+        Assertions.assertNotNull(fileModel.getId());
+        Mockito.when(service.downloadFileById(Mockito.any())).thenReturn(fileModel);
+        service.deleteFileByID(fileModel.getId());
+        log.info("File deleted");
+    }
+
+    public void testServiceUpdate() {
+        createTestFile();
+        createFileDTO();
+        String id = String.valueOf(fileModel.getId());
+        Assertions.assertNotNull(id);
+        Assertions.assertNotNull(fileDTO);
+        service.updateFile(fileDTO, id);
+        log.info("File updated");
+    }
+
+    public void testRepoFindByName() {
+        createTestFile();
+        String fileName = fileModel.getName();
+        List<FileModel> fileModelList = new ArrayList<>();
+        repository.findByName(fileName);
+        Assertions.assertEquals("testName", fileName);
+        Mockito.when(repository.findByName(fileName)).thenReturn(fileModelList);
+    }
+
+    public void testDownloadLink() {
+        createTestFile();
+        String id = String.valueOf(fileModel.getId());
+        System.out.println(service.getFilesName());
+    }
 }

@@ -33,17 +33,12 @@ public interface EntityMapper {
                 .toUriString();
     }
 
-    @Mapping(target = "PageDTO", source = "Page")
     default PageDTO<FileDTO> toPageDTO(Page<FileModel> fileModelPage) {
-        int totalPages = fileModelPage.getTotalPages();
-        long totalElements = fileModelPage.getTotalElements();
-        int size = fileModelPage.getSize();
-        List<FileModel> content = fileModelPage.getContent();
         PageDTO<FileDTO> fileDTOPageDTO = new PageDTO<>();
-        fileDTOPageDTO.setSize(size);
-        fileDTOPageDTO.setTotalPages(totalPages);
-        fileDTOPageDTO.setTotalElements(totalElements);
-        fileDTOPageDTO.setContent(toFileDTOList(content));
+        fileDTOPageDTO.setSize(fileModelPage.getSize());
+        fileDTOPageDTO.setTotalPages(fileModelPage.getTotalPages());
+        fileDTOPageDTO.setTotalElements(fileModelPage.getTotalElements());
+        fileDTOPageDTO.setContent(toFileDTOList(fileModelPage.getContent()));
         return fileDTOPageDTO;
     }
 }
