@@ -58,10 +58,6 @@ public class FileController {
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileModel.getName() + "")
                 .body(fileModel.getData());
     }
-    @GetMapping("/filter/{name}")
-    public List<FileModel> fileModels(@PathVariable("name") String name) {
-        return fileService.filterByName(name);
-    }
 
     @Operation(summary = "Удаление файла", description = "Чтобы удалить файл, нужно указать его id")
     @PostMapping("/file/delete/{id}")

@@ -1,6 +1,5 @@
 package com.example.storage.service;
 
-import com.example.storage.controller.RequestParams;
 import com.example.storage.dto.FileDTO;
 import com.example.storage.dto.PageDTO;
 import com.example.storage.mapper.EntityMapper;
