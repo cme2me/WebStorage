@@ -7,8 +7,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.io.IOException;
-
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
 class StorageApplicationTests {
@@ -16,27 +14,45 @@ class StorageApplicationTests {
     @Autowired
     private TestRepositoryMethods testRepositoryMethods;
 
-    /*@Test
-    @DisplayName("Test save method")
-    public void saveFile() throws IOException {
-        testLogic.testFileSave();
-    }*/
-
     @Test
-    @DisplayName("Test download method")
-    public void downloadFile() {
-
+    @DisplayName("Test create model method")
+    public void testCreateModel() {
+        testRepositoryMethods.createTestFile();
     }
 
     @Test
-    @DisplayName("Test get all files")
-    public void findAllFiles() throws IOException {
-        testRepositoryMethods.testFindAll();
+    @DisplayName("Test MockRepo and MockFileModel not null")
+    public void testRepoAndModelNotNull() {
+        testRepositoryMethods.testNotNullMockObjects();
     }
 
     @Test
-    @DisplayName("Test save repo method")
-    public void testCreateFile() throws IOException {
-        testRepositoryMethods.createFile();
+    @DisplayName("Test save file")
+    public void testServiceUpload() {
+        testRepositoryMethods.testServiceSave();
+    }
+
+    @Test
+    @DisplayName("Test delete file")
+    public void testServiceDelete() {
+        testRepositoryMethods.testServiceDelete();
+    }
+
+    @Test
+    @DisplayName("Test update file")
+    public void testServiceUpdate() {
+        testRepositoryMethods.testServiceUpdate();
+    }
+
+    @Test
+    @DisplayName("Test find by name")
+    public void testFindByName() {
+        testRepositoryMethods.testRepoFindByName();
+    }
+
+    @Test
+    @DisplayName("Test download file")
+    public void testGetDownloadLink() {
+        testRepositoryMethods.testDownloadLink();
     }
 }

@@ -8,6 +8,7 @@ import com.example.storage.service.FileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -83,10 +84,11 @@ public class FileController {
             @RequestParam(value = "from", required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
             @RequestParam(value = "to", required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to) {
-        RequestParams requestParams = new RequestParams(name, format, from, to);
-        return ResponseEntity.ok().body(fileService.findFilteredFiles(requestParams.getName(),
-                requestParams.getFormat(),requestParams.getFrom(), requestParams.getTo()));
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
+            @RequestParam(value = "page", defaultValue = "0",required = false) Integer page,
+            @RequestParam(value = "pageSize", defaultValue = "10",required = false) Integer size) {
+        RequestParams requestParams = new RequestParams(name, format, from, to, page, size);
+        return ResponseEntity.ok().body(fileService.findFilteredFiles(requestParams));
     }
 
     //todo один эндпоинт на все параметры фильтра /get?from=&to&name=&... | ++
