@@ -1,12 +1,17 @@
 package com.example.storage;
 
+import com.example.storage.controller.FileController;
+import com.example.storage.controller.RequestParams;
 import com.example.storage.dto.FileDTO;
+import com.example.storage.mapper.EntityMapper;
+import com.example.storage.mapper.EntityMapperImpl;
 import com.example.storage.model.FileModel;
 import com.example.storage.repository.FileRepository;
 import com.example.storage.service.FileService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
-import org.mockito.*;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -14,6 +19,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -22,10 +28,12 @@ public class TestRepositoryMethods {
 
     private final FileRepository repository = Mockito.mock(FileRepository.class);
     private final FileService service = Mockito.mock(FileService.class);
-    @Mock
     private FileModel fileModel = new FileModel();
-    @Mock
     private FileDTO fileDTO = new FileDTO();
+    @Mock
+    private FileController controller = new FileController(this.service);
+    @Mock
+    private EntityMapper mapper = new EntityMapperImpl();
 
 
     public void testNotNullMockObjects() {
@@ -83,8 +91,10 @@ public class TestRepositoryMethods {
     public void testServiceSave() {
         createTestFile();
         service.putFile(new MockMultipartFile(fileModel.getName(), fileModel.getData()), fileModel.getComment());
+        repository.save(fileModel);
         Assertions.assertEquals("testName", fileModel.getName());
         System.out.println(repository.save(fileModel));
+        Mockito.when(repository.save(fileModel)).thenReturn(fileModel);
         log.info("File uploaded");
     }
 
@@ -117,7 +127,12 @@ public class TestRepositoryMethods {
 
     public void testDownloadLink() {
         createTestFile();
-        String id = String.valueOf(fileModel.getId());
-        System.out.println(service.getFilesName());
+        String id = fileModel.getId().toString();
+        Mockito.when(repository.findById(fileModel.getId())).thenReturn(Optional.of(fileModel));
+        Optional<FileModel> optionalEntity = repository.findById(fileModel.getId());
+        repository.save(fileModel);
+        FileModel fileModelActual = service.downloadFileById(id);
+        Optional<FileModel> optionalFileModel = repository.findById(UUID.fromString(id));
+        Assertions.assertEquals(fileModel, fileModelActual);
     }
 }
