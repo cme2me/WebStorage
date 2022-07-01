@@ -12,47 +12,34 @@ import org.springframework.boot.test.context.SpringBootTest;
 class StorageApplicationTests {
 
     @Autowired
-    private TestRepositoryMethods testRepositoryMethods;
-
-    @Test
-    @DisplayName("Test create model method")
-    public void testCreateModel() {
-        testRepositoryMethods.createTestFile();
-    }
+    private TestMethods testMethods;
 
     @Test
     @DisplayName("Test MockRepo and MockFileModel not null")
     public void testRepoAndModelNotNull() {
-        testRepositoryMethods.testNotNullMockObjects();
+        testMethods.testNotNullMockObjects();
     }
 
     @Test
     @DisplayName("Test save file")
     public void testServiceUpload() {
-        testRepositoryMethods.testServiceSave();
+        testMethods.testServiceSave();
     }
-
     @Test
-    @DisplayName("Test delete file")
-    public void testServiceDelete() {
-        testRepositoryMethods.testServiceDelete();
-    }
-
-    @Test
-    @DisplayName("Test update file")
-    public void testServiceUpdate() {
-        testRepositoryMethods.testServiceUpdate();
+    @DisplayName("Test download file")
+    public void testServiceDownload() {
+        testMethods.testServiceDownload();
     }
 
     @Test
     @DisplayName("Test find by name")
     public void testFindByName() {
-        testRepositoryMethods.testRepoFindByName();
+        testMethods.testFindByName();
     }
 
     @Test
-    @DisplayName("Test download file")
-    public void testGetDownloadLink() {
-        testRepositoryMethods.testDownloadLink();
+    @DisplayName("Test request with params")
+    public void testRequestWithParams() {
+        testMethods.testRequestWithParams();
     }
 }

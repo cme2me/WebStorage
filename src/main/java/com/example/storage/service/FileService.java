@@ -96,7 +96,7 @@ public class FileService {
         Page<FileModel> fileModelPage = fileRepository.findAll(specification.nameAndFormatAndDates(requestParams.getName(),
                 requestParams.getFormat(), requestParams.getFrom(), requestParams.getTo()), PageRequest.of(requestParams.getPage(), requestParams.getSize()));
         return mapper.toPageDTO(fileModelPage);
-        //todo сделать PageDTO, 3 параметра PageRequest, замаппить | +-
+        //todo сделать PageDTO, 3 параметра PageRequest, замаппить | +
     }
 
     public List<FileDTO> showAllFiles() {
