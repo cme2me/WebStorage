@@ -10,7 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class PageDTO<T> {
-    private long size;
+    private int size;
     private long totalElements;
     private int totalPages;
     private List<T> content;
