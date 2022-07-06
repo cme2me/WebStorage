@@ -168,7 +168,7 @@ public class TestMethods {
 
         Assertions.assertNotNull(expectedDtoList);
         Assertions.assertEquals(fileDTO, expectedDtoList.get(0));
-        Assertions.assertEquals(fileDTO.getName(), expectedDtoList.get(0).getName());
+        Assertions.assertEquals(expectedDtoList.get(0).getName(), fileDTO.getName());
     }
 
     public void getFilesName() {
@@ -178,7 +178,7 @@ public class TestMethods {
         Mockito.when(service.getFilesName()).thenReturn(expectedFilesNames);
 
         Assertions.assertNotNull(expectedFilesNames);
-        Assertions.assertEquals(fileModel.getName(), expectedFilesNames.get(0));
+        Assertions.assertEquals(expectedFilesNames.get(0), fileModel.getName());
     }
 
     public void updateMethod() {
@@ -188,7 +188,7 @@ public class TestMethods {
         String id = fileModel.getId().toString();
         createFileDTO();
 
-        Mockito.doCallRealMethod().when(service).updateFile(fileDTO,id);
+        Mockito.doCallRealMethod().when(service).updateFile(fileDTO, id);
 
         Assertions.assertNotNull(expectedFileDto);
         Assertions.assertEquals(expectedFileDto.getName(), fileDTO.getName());
