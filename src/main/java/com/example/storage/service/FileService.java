@@ -15,11 +15,16 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
-import java.io.IOException;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Service
 @Slf4j
@@ -102,5 +107,28 @@ public class FileService {
     public List<FileDTO> showAllFiles() {
         List<FileModel> files = fileRepository.findAll();
         return mapper.toFileDTOList(files);
+    }
+
+    public StreamingResponseBody downloadZipped(List<UUID> id, HttpServletResponse response) {
+        List<FileModel> fileModel = fileRepository.findAllById(id);
+        StreamingResponseBody streamingResponseBody = outputStream -> {
+            ZipOutputStream zout = new ZipOutputStream(response.getOutputStream());
+            for (FileModel model : fileModel) {
+                Path path = Path.of(model.getName());
+                File fileToZip = new File(String.valueOf(path));
+                FileInputStream fis = new FileInputStream(fileToZip);
+                ZipEntry zipEntry = new ZipEntry(fileToZip.getName());
+                zout.putNextEntry(zipEntry);
+                byte[] bytes = new byte[1024];
+                int length;
+                while ((length = fis.read(bytes)) >= 0) {
+                    zout.write(bytes, 0 ,length);
+                }
+                fis.close();
+            }
+            zout.close();
+        };
+
+        return streamingResponseBody;
     }
 }

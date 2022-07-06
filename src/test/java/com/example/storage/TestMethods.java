@@ -82,6 +82,7 @@ public class TestMethods {
     }
 
     public void createFileDTO() {
+        createActualFileModel();
         String downloadURL = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/download/")
                 .path(fileModel.getId().toString())
@@ -156,5 +157,40 @@ public class TestMethods {
         Assertions.assertNotNull(pageDTO);
         Assertions.assertNotNull(shouldBeReturned);
         Assertions.assertEquals(shouldBeReturned.getTotalPages(), pageDTO.getTotalPages());
+    }
+
+    public void showAllFiles() {
+        List<FileDTO> expectedDtoList = new ArrayList<>();
+        expectedDtoList.add(fileDTO);
+        createFileDTO();
+
+        Mockito.when(service.showAllFiles()).thenReturn(expectedDtoList);
+
+        Assertions.assertNotNull(expectedDtoList);
+        Assertions.assertEquals(fileDTO, expectedDtoList.get(0));
+        Assertions.assertEquals(expectedDtoList.get(0).getName(), fileDTO.getName());
+    }
+
+    public void getFilesName() {
+        List<String> expectedFilesNames = new ArrayList<>();
+        expectedFilesNames.add(fileModel.getName());
+
+        Mockito.when(service.getFilesName()).thenReturn(expectedFilesNames);
+
+        Assertions.assertNotNull(expectedFilesNames);
+        Assertions.assertEquals(expectedFilesNames.get(0), fileModel.getName());
+    }
+
+    public void updateMethod() {
+        FileDTO expectedFileDto = new FileDTO();
+        createActualFileModel();
+        expectedFileDto.setName(fileModel.getName());
+        String id = fileModel.getId().toString();
+        createFileDTO();
+
+        Mockito.doCallRealMethod().when(service).updateFile(fileDTO, id);
+
+        Assertions.assertNotNull(expectedFileDto);
+        Assertions.assertEquals(expectedFileDto.getName(), fileDTO.getName());
     }
 }

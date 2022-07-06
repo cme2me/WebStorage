@@ -8,17 +8,20 @@ import com.example.storage.service.FileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -91,5 +94,14 @@ public class FileController {
         return ResponseEntity.ok().body(fileService.findFilteredFiles(requestParams));
     }
 
+    @GetMapping("files/zip/download")
+    public ResponseEntity<StreamingResponseBody> downloadZipped(@RequestParam(value = "id") List<UUID> id, HttpServletResponse response) {
+        response.setContentType("application/zip");
+        response.setHeader("Content-Disposition", "attachment; filename=dir.zip");
+        response.addHeader("Pragma", "no-cache");
+        response.addHeader("Expires", "0");
+       return ResponseEntity.ok().body(fileService.downloadZipped(id, response));
+
+    }
     //todo один эндпоинт на все параметры фильтра /get?from=&to&name=&... | ++
 }

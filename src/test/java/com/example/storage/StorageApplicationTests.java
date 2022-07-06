@@ -25,6 +25,7 @@ class StorageApplicationTests {
     public void testServiceUpload() {
         testMethods.testServiceSave();
     }
+
     @Test
     @DisplayName("Test download file")
     public void testServiceDownload() {
@@ -41,5 +42,23 @@ class StorageApplicationTests {
     @DisplayName("Test request with params")
     public void testRequestWithParams() {
         testMethods.testRequestWithParams();
+    }
+
+    @Test
+    @DisplayName("Test show all files")
+    public void testShowAllFiles() {
+        testMethods.showAllFiles();
+    }
+
+    @Test
+    @DisplayName("Test get file names")
+    public void testGetFilesName() {
+        testMethods.getFilesName();
+    }
+
+    @Test
+    @DisplayName("Test update file")
+    public void testUpdateMethod() {
+        testMethods.updateMethod();
     }
 }
