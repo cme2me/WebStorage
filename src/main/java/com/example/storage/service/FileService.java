@@ -114,7 +114,7 @@ public class FileService {
         StreamingResponseBody streamingResponseBody = outputStream -> {
             ZipOutputStream zout = new ZipOutputStream(response.getOutputStream());
             for (FileModel model : fileModel) {
-                Path path = Path.of(String.valueOf(model));
+                Path path = Path.of(model.getName());
                 File fileToZip = new File(String.valueOf(path));
                 FileInputStream fis = new FileInputStream(fileToZip);
                 ZipEntry zipEntry = new ZipEntry(fileToZip.getName());
