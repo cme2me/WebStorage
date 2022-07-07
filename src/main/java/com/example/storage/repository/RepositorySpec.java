@@ -1,6 +1,6 @@
 package com.example.storage.repository;
 
-import com.example.storage.model.FileModel;
+import com.example.storage.model.FileEntity;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
@@ -11,7 +11,7 @@ import java.util.List;
 
 @Component
 public class RepositorySpec {
-    public Specification<FileModel> nameAndFormatAndDates(String name, String format, LocalDateTime from, LocalDateTime to) {
+    public Specification<FileEntity> nameAndFormatAndDates(String name, String format, LocalDateTime from, LocalDateTime to) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
             if (name != null) {
