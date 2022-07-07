@@ -3,7 +3,7 @@ package com.example.storage.controller;
 import com.example.storage.dto.FileDTO;
 import com.example.storage.dto.PageDTO;
 import com.example.storage.dto.ResponseMessage;
-import com.example.storage.model.FileModel;
+import com.example.storage.model.FileEntity;
 import com.example.storage.service.FileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,12 +16,9 @@ import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -58,9 +55,9 @@ public class FileController {
     @Operation(summary = "Скачивания файла", description = "Необходимо указать id файла, который хотите скачать")
     @GetMapping("/download/{id}")
     public ResponseEntity<byte[]> getFileByID(@PathVariable String id) {
-        FileModel fileModel = fileService.downloadFileById(id);
-        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileModel.getName() + "")
-                .body(fileModel.getData());
+        FileEntity fileEntity = fileService.downloadFileById(id);
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileEntity.getName() + "")
+                .body(fileEntity.getData());
     }
 
     @Operation(summary = "Удаление файла", description = "Чтобы удалить файл, нужно указать его id")
@@ -96,13 +93,11 @@ public class FileController {
 
     @Operation(summary = "Скачивание нескольких файлов одним архивом", description = "Необходимо указать id файлов, которые вы хотите скачать в архиве")
     @GetMapping("files/zip/download")
-    public ResponseEntity<StreamingResponseBody> downloadZipped(@RequestParam(value = "id") List<UUID> id, HttpServletResponse response) {
-        response.setContentType("application/zip");
-        response.setHeader("Content-Disposition", "attachment; filename=dir.zip");
-        response.addHeader("Pragma", "no-cache");
-        response.addHeader("Expires", "0");
-       return ResponseEntity.ok().body(fileService.downloadZipped(id, response));
+    public ResponseEntity<StreamingResponseBody> downloadZipped(@RequestParam(value = "id") List<UUID> id) {
 
+       return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"")
+               .header(HttpHeaders.CONTENT_TYPE, "application/zip").body(fileService.downloadZipped(id));
     }
     //todo один эндпоинт на все параметры фильтра /get?from=&to&name=&... | ++
+    //todo создание Entity через FlyWay, Тесты, app.properties в app.yml, убрать поднятие контекста при запуске тестов
 }

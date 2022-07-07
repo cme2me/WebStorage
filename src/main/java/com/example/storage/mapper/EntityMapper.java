@@ -3,7 +3,7 @@ package com.example.storage.mapper;
 
 import com.example.storage.dto.FileDTO;
 import com.example.storage.dto.PageDTO;
-import com.example.storage.model.FileModel;
+import com.example.storage.model.FileEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -15,25 +15,23 @@ import java.util.List;
 
 @Component
 @Mapper(componentModel = "spring")
-//todo сделать mapper | +--
+//todo сделать mapper | +
 public interface EntityMapper {
-    @Mapping(target = "size", expression = "java( fileModel.getData().length )")
-    @Mapping(target = "downloadURL", qualifiedByName = "createDownloadURL", source = "fileModel")
-    FileDTO toFileDTO(FileModel fileModel);
+    @Mapping(target = "size", expression = "java( fileEntity.getData().length )")
+    @Mapping(target = "downloadURL", qualifiedByName = "createDownloadURL", source = "fileEntity")
+    FileDTO toFileDTO(FileEntity fileEntity);
 
-    FileModel toEntity(FileDTO fileDTO);
-
-    List<FileDTO> toFileDTOList(List<FileModel> fileModel);
+    List<FileDTO> toFileDTOList(List<FileEntity> fileEntity);
 
     @Named("createDownloadURL")
-    default String createDownloadURL(FileModel fileModel) {
+    default String createDownloadURL(FileEntity fileEntity) {
         return ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/download/")
-                .path(fileModel.getId().toString())
+                .path(fileEntity.getId().toString())
                 .toUriString();
     }
 
-    default PageDTO<FileDTO> toPageDTO(Page<FileModel> fileModelPage) {
+    default PageDTO<FileDTO> toPageDTO(Page<FileEntity> fileModelPage) {
         PageDTO<FileDTO> fileDTOPageDTO = new PageDTO<>();
         fileDTOPageDTO.setSize(fileModelPage.getSize());
         fileDTOPageDTO.setTotalPages(fileModelPage.getTotalPages());

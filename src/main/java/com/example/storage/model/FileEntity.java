@@ -16,7 +16,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Builder
-public class FileModel {
+public class FileEntity {
     @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
@@ -36,7 +36,7 @@ public class FileModel {
     /*@OneToOne
     private SeconModel seconModel;*/
 
-    public FileModel(String name, String format, byte[] data, String comment) {
+    public FileEntity(String name, String format, byte[] data, String comment) {
         this.name = name;
         this.format = format;
         this.data = data;
