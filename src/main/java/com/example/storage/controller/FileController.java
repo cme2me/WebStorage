@@ -55,7 +55,7 @@ public class FileController {
         return ResponseEntity.ok().body(fileService.showAllFiles());
     }
 
-    @Operation(summary = "Скачивания файла", description = "Метод возвращает ссылку на скачивание файла, необходимо указать id файла, который хотите скачать")
+    @Operation(summary = "Скачивания файла", description = "Необходимо указать id файла, который хотите скачать")
     @GetMapping("/download/{id}")
     public ResponseEntity<byte[]> getFileByID(@PathVariable String id) {
         FileModel fileModel = fileService.downloadFileById(id);
@@ -94,6 +94,7 @@ public class FileController {
         return ResponseEntity.ok().body(fileService.findFilteredFiles(requestParams));
     }
 
+    @Operation(summary = "Скачивание нескольких файлов одним архивом", description = "Необходимо указать id файлов, которые вы хотите скачать в архиве")
     @GetMapping("files/zip/download")
     public ResponseEntity<StreamingResponseBody> downloadZipped(@RequestParam(value = "id") List<UUID> id, HttpServletResponse response) {
         response.setContentType("application/zip");
