@@ -1,6 +1,6 @@
 package com.example.storage.repository;
 
-import com.example.storage.model.FileModel;
+import com.example.storage.model.FileEntity;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Component;
 
@@ -19,35 +19,35 @@ import java.util.List;
 public class FileCustomRepositoryImpl implements FileCustomRepository {
     private final EntityManager em;
     private CriteriaBuilder cb;
-    private CriteriaQuery<FileModel> cq;
+    private CriteriaQuery<FileEntity> cq;
 
     public FileCustomRepositoryImpl(EntityManager em) {
         this.em = em;
     }
 
     @Override
-    public List<FileModel> findByName(String name) {
+    public List<FileEntity> findByName(String name) {
         cb = em.getCriteriaBuilder();
-        cq = cb.createQuery(FileModel.class);
-        Root<FileModel> file = cq.from(FileModel.class);
+        cq = cb.createQuery(FileEntity.class);
+        Root<FileEntity> file = cq.from(FileEntity.class);
         Predicate fileNamePredicate = cb.like(file.<String>get("name"), "%" + name + "%");
         cq.where(fileNamePredicate);
-        TypedQuery<FileModel> query = em.createQuery(cq);
+        TypedQuery<FileEntity> query = em.createQuery(cq);
         return query.getResultList();
     }
 
     @Override
-    public List<FileModel> findByFromDateAndToDate(LocalDateTime from, LocalDateTime to) {
+    public List<FileEntity> findByFromDateAndToDate(LocalDateTime from, LocalDateTime to) {
         cb = em.getCriteriaBuilder();
-        cq = cb.createQuery(FileModel.class);
-        Root<FileModel> file = cq.from(FileModel.class);
+        cq = cb.createQuery(FileEntity.class);
+        Root<FileEntity> file = cq.from(FileEntity.class);
         List<Predicate> conditionsList = new ArrayList<>();
         Predicate onStart = cb.greaterThanOrEqualTo(file.get("date"), from);
         Predicate onEnd = cb.lessThanOrEqualTo(file.get("date"), to);
         conditionsList.add(onStart);
         conditionsList.add(onEnd);
         cq.where(conditionsList.toArray(new Predicate[]{}));
-        TypedQuery<FileModel> query = em.createQuery(cq);
+        TypedQuery<FileEntity> query = em.createQuery(cq);
         return query.getResultList();
     }
 

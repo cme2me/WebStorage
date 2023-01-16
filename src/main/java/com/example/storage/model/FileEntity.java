@@ -1,9 +1,6 @@
 package com.example.storage.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -16,9 +13,10 @@ import java.util.UUID;
 @Table(name = "storage_files")
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
 @Builder
-public class FileModel {
+public class FileEntity {
     @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
@@ -38,7 +36,7 @@ public class FileModel {
     /*@OneToOne
     private SeconModel seconModel;*/
 
-    public FileModel(String name, String format, byte[] data, String comment) {
+    public FileEntity(String name, String format, byte[] data, String comment) {
         this.name = name;
         this.format = format;
         this.data = data;
