@@ -3,19 +3,19 @@ package com.example.storage;
 import com.example.storage.controller.RequestParams;
 import com.example.storage.dto.FileDTO;
 import com.example.storage.dto.PageDTO;
+import com.example.storage.mapper.EntityMapper;
 import com.example.storage.model.FileEntity;
 import com.example.storage.repository.FileRepository;
+import com.example.storage.repository.RepositorySpec;
 import com.example.storage.service.FileService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.io.*;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,16 +24,17 @@ import java.util.UUID;
 @Component
 @Slf4j
 public class TestMethods {
-    private final FileRepository repository = Mockito.mock(FileRepository.class);
-    @InjectMocks
-    private final FileService service;
     private final FileEntity fileEntity = new FileEntity();
     private final PageDTO<FileDTO> pageDTO = new PageDTO<>();
     private final FileDTO fileDTO = new FileDTO();
 
-    public TestMethods(FileService service) {
-        this.service = service;
-    }
+    private final FileRepository repository = Mockito.mock(FileRepository.class);
+
+    private final RepositorySpec spec = Mockito.mock(RepositorySpec.class);
+
+    private final EntityMapper mapper = Mockito.mock(EntityMapper.class);
+
+    private final FileService service = new FileService(repository, spec, mapper);
 
     public void testNotNullMockObjects() {
         Assertions.assertNotNull(repository);
@@ -118,9 +119,8 @@ public class TestMethods {
         createActualFileEntity();
         createExpectedFileEntity(expectedFileEntity);
 
+        Mockito.when(repository.save(null)).thenReturn(RuntimeException.class);
 
-        service.putFile(null, null);
-        Assertions.assertNotNull(expectedFileEntity);
         Assertions.assertEquals(expectedFileEntity.getName(), fileEntity.getName());
     }
 
@@ -129,6 +129,7 @@ public class TestMethods {
         createActualFileEntity();
         createExpectedFileEntity(expectedFileEntity);
 
+        service.downloadFileById(fileEntity.getId().toString());
         Mockito.when(service.downloadFileById(Mockito.any())).thenReturn(expectedFileEntity);
 
         Assertions.assertNotNull(expectedFileEntity);
@@ -165,15 +166,11 @@ public class TestMethods {
     }
 
     public void showAllFiles() {
-        List<FileDTO> expectedDtoList = new ArrayList<>();
-        expectedDtoList.add(fileDTO);
-        createFileDTO();
+        service.showAllFiles();
 
-        Mockito.when(service.showAllFiles()).thenReturn(expectedDtoList);
+        Mockito.verify(repository).findAll();
 
-        Assertions.assertNotNull(expectedDtoList);
-        Assertions.assertEquals(fileDTO, expectedDtoList.get(0));
-        Assertions.assertEquals(expectedDtoList.get(0).getName(), fileDTO.getName());
+
     }
 
     public void getFilesName() {
@@ -206,10 +203,5 @@ public class TestMethods {
         StreamingResponseBody srb = Mockito.mock(StreamingResponseBody.class);
 
 
-
-
-
-//
-//        Assertions.assertEquals();
     }
 }

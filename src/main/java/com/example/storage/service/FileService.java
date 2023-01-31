@@ -7,9 +7,8 @@ import com.example.storage.mapper.EntityMapper;
 import com.example.storage.model.FileEntity;
 import com.example.storage.repository.FileRepository;
 import com.example.storage.repository.RepositorySpec;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -32,23 +31,15 @@ import java.util.zip.ZipOutputStream;
 
 @Service
 @Slf4j
+@AllArgsConstructor
 //todo логер, info methods, debug
 public class FileService {
-
     private final FileRepository fileRepository;
     private final RepositorySpec specification;
     private final EntityMapper mapper;
 
-
-    public FileService(FileRepository fileRepository, RepositorySpec specification, EntityMapper mapper) {
-        this.fileRepository = fileRepository;
-        this.specification = specification;
-        this.mapper = mapper;
-    }
-
     public void putFile(MultipartFile file, String comment) {
         if (file.isEmpty()) {
-            //todo кидать ошибку, а badRequest отлавливать в handler | done
             log.error("File is empty");
             throw new RuntimeException();
         }
@@ -120,9 +111,8 @@ public class FileService {
             try (ZipOutputStream zout = new ZipOutputStream(outputStream)) {
                 for (FileEntity model : fileEntity) {
                     Path fileWriteBytes = Files.write(Paths.get(model.getName()), model.getData());
-                    File fileToZip = new File(fileWriteBytes.toFile().getName());
                     FileInputStream fis = new FileInputStream(fileWriteBytes.toFile().getName());
-                    ZipEntry zipEntry = new ZipEntry(fileToZip.getName());
+                    ZipEntry zipEntry = new ZipEntry(fileWriteBytes.toFile().getName());
                     zout.putNextEntry(zipEntry);
                     byte[] bytes = new byte[1024];
                     int length;
